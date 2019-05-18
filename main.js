@@ -6,10 +6,10 @@ const TOTAL_CARDS = 108;
 const TOTAL_ROUNDS = 3;
 
 const PLAYER_POSITIONS = [
-  {x: 0, y: 0}, // TOP
-  {x: 0, y: 100},  // LEFT
-  {x: 0, y: 20},  // BOTTOM
-  {x: 0, y: 20},  // RIGHT
+  { x: 0, y: 0 }, // TOP
+  { x: 0, y: 100 },  // LEFT
+  { x: 0, y: 20 },  // BOTTOM
+  { x: 0, y: 20 },  // RIGHT
 ]
 
 const CARDS = {
@@ -85,6 +85,8 @@ class Player {
   constructor(name = "Default", hand = [], position) {
     this.name = name
     this.hand = hand
+    this.x = position.x
+    this.y = position.y
     this.revealedCards = []
     this._currentState = PLAYER_STATE.WAITING
   }
