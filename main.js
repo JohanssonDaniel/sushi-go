@@ -13,16 +13,16 @@ const PLAYER_POSITIONS = [
 ]
 
 const CARDS = [
-  { name: 'Tempura', count: 14 },
-  { name: 'Sashimi', count: 14 },
-  { name: 'Dumpling', count: 14 },
-  { name: 'Maki', count: 26 },
-  { name: 'Salmon Nigri', count: 10 },
-  { name: 'Squid Nigri', count: 5 },
-  { name: 'Egg', count: 5 },
-  { name: 'Pudding', count: 10 },
-  { name: 'Wasabi', count: 6 },
-  { name: 'Chopsticks', count: 4 },
+  { name: 'Tempura', count: 14, color: 'black' },
+  { name: 'Sashimi', count: 14, color: 'red' },
+  { name: 'Dumpling', count: 14, color: 'blue' },
+  { name: 'Maki', count: 26, color: 'green' },
+  { name: 'Salmon Nigri', count: 10, color: 'yellow' },
+  { name: 'Squid Nigri', count: 5, color: 'gray' },
+  { name: 'Egg', count: 5, color: 'pink' },
+  { name: 'Pudding', count: 10, color: 'orange' },
+  { name: 'Wasabi', count: 6, color: 'lightblue' },
+  { name: 'Chopsticks', count: 4, color: 'pink' },
 ];
 
 const CARD_SIZE = {
@@ -162,8 +162,9 @@ class Player {
 }
 
 class Card {
-  constructor(name = "DefaultCard", isPicked = false) {
+  constructor(name = "DefaultCard", color='black', isPicked = false) {
     this.name = name
+    this.color = color
     this._x = 0
     this._y = 0
     this._isPicked = isPicked
@@ -203,9 +204,10 @@ class Card {
       CARD_SIZE.height
     );
     if (this._isPicked) {
-      ctx.fillStyle = "blue";
+      ctx.fillStyle = "darkgreen";
+      ctx.stroke()
     } else {
-      ctx.fillStyle = "red";
+      ctx.fillStyle = this.color;
     }
     ctx.fill();
   }
@@ -271,7 +273,7 @@ function setupDeck() {
   deck = []
   for (const card of CARDS) {
     for (let i = 0; i < card.count; i++) {
-      deck.push(new Card(card.name))
+      deck.push(new Card(card.name, card.color))
     }
   }
 }
