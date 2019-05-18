@@ -38,10 +38,11 @@ const CARDS_PER_PLAYER = {
 }
 
 const PLAYER_STATE = {
-  WAITING: "waiting",
-  CHOOSING_CARD: "choosing_card",
-  HAS_CHOSEN_CARD: "has_chosen_card",
-  TAKE_UP_HAND: "take_up_hand"
+  WAITING: "is_waiting",
+  CHOOSING_CARD: "will_choose_card",
+  REVEAL_CARD: "will_reveal_card",
+  PUT_DOWN_HAND: "will_put_down_hand",
+  PICKUP_HAND: "will_take_up_hand"
 };
 
 const GAME_STATE = {
@@ -49,13 +50,14 @@ const GAME_STATE = {
   DEALING_CARDS_TO_PLAYERS: "dealing_cards_to_players",
   PLAYERS_CHOOSE_CARD: "players_choose_card",
   PLAYERS_REVEAL_CARD: "players_reveal_card",
+  PLAYERS_PUT_DOWN_HAND: "players_put_down_hand",
   PLAYERS_PICKUP_HAND: "players_pickup_hand",
   CALCULATING_SCORES: "calculating_scores"
 };
 
 let deck = [];
 let players = [];
-let tableCards = [];
+let handsOnTable = [];
 let remainingCards = 0;
 let remainingRounds = 0;
 
@@ -101,7 +103,7 @@ class Player {
     })
   }
 
-  updateHand(hand) {
+  pickupHand(hand) {
     this.hand = hand
     this.hand.forEach((card, i) => {
       card.x = this.x + i * CARD_SIZE.width * 2;
@@ -120,7 +122,7 @@ class Player {
 
     })
 
-    this._currentState = PLAYER_STATE.HAS_CHOSEN_CARD; 
+    this._currentState = PLAYER_STATE.HAS_CHOSEN_CARD;
     console.log(this.name + ' has picked ' + card.name);
   }
 
@@ -197,13 +199,13 @@ class Card {
     ctx.rect(
       this._x,
       this._y,
-      CARD_SIZE.width, 
+      CARD_SIZE.width,
       CARD_SIZE.height
     );
     if (this._isPicked) {
       ctx.fillStyle = "blue";
     } else {
-    ctx.fillStyle = "red";
+      ctx.fillStyle = "red";
     }
     ctx.fill();
   }
@@ -215,7 +217,7 @@ class Card {
 }
 
 function shuffleDeck() {
-// Shuffles an array based on https://en.wikipedia.org/wiki/Fisher–Yates_shuffle#Modern_method
+  // Shuffles an array based on https://en.wikipedia.org/wiki/Fisher–Yates_shuffle#Modern_method
 
   // --To shuffle an array a of n elements(indices 0..n - 1):
   // for i from n−1 downto 1 do
@@ -271,8 +273,14 @@ function setupDeck() {
     for (let i = 0; i < card.count; i++) {
       deck.push(new Card(card.name))
     }
-    }
   }
+}
+
+function setupHandsOnTable() {
+  handsOnTable = []
+  players.forEach(_ => {
+    handsOnTable.push([]);
+  })
 }
 
 function setupPlayers() {
@@ -305,6 +313,7 @@ function setRemainingRoundsTitle() {
 function setup() {
   setupCanvas();
   setupDeck();
+  setupHandsOnTable();
   shuffleDeck();
   setupPlayers();
   dealOneHand();
@@ -362,6 +371,7 @@ function loop() {
       return;
     case GAME_STATE.DEALING_CARDS_TO_PLAYERS:
       dealOneHand();
+      setAllPlayerState(PLAYER_STATE.WAITING)
       setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
       break;
     case GAME_STATE.PLAYERS_CHOOSE_CARD:
@@ -369,27 +379,47 @@ function loop() {
         remainingCards -= 1
         setRemainingCardsTitle()
         setGameState(GAME_STATE.PLAYERS_REVEAL_CARD);
-        setAllPlayerState(PLAYER_STATE.TAKE_UP_HAND);
+        setAllPlayerState(PLAYER_STATE.REVEAL_HAND);
       }
       break;
     case GAME_STATE.PLAYERS_REVEAL_CARD:
       if (remainingCards == 0) {
         if (currentRound == TOTAL_ROUNDS) {
+          setAllPlayerState(PLAYER_STATE.WAITING)
           setGameState(GAME_STATE.CALCULATING_SCORES);
         } else {
           currentRound += 1;
+          setAllPlayerState(PLAYER_STATE.WAITING)
           setGameState(GAME_STATE.DEALING_CARDS_TO_PLAYERS);
         }
-        }
-      else {
-        setGameState(GAME_STATE.PLAYERS_PICKUP_HAND);
       }
+      else {
+        setAllPlayerState(PLAYER_STATE.PUT_DOWN_HAND)
+        setGameState(GAME_STATE.PLAYERS_PUT_DOWN_HAND);
+      }
+      break;
+    case GAME_STATE.PLAYERS_PUT_DOWN_HAND:
+      players.forEach((player, i) => {
+        let playerHand = player.putHandOnTable();
+        let nextPlayerIDX = i == players.length - 1 ? 0 : i + 1;
+        handsOnTable[nextPlayerIDX] = playerHand;
+      })
+      setAllPlayerState(PLAYER_STATE.PICKUP_HAND)
+      setGameState(GAME_STATE.PLAYERS_PICKUP_HAND);
+      break;
+    case GAME_STATE.PLAYERS_PICKUP_HAND:
+      players.forEach((player, i) => {
+        let hand = handsOnTable[i];
+        player.pickupHand(hand);
+      })
+      setAllPlayerState(PLAYER_STATE.CHOOSING_CARD)
+      setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
     default:
       break;
   }
 
   ctx.clearRect(0, 0, canvas.element.width, canvas.element.height);
-  
+
   players.forEach(player => {
     player.paintHand();
   });
