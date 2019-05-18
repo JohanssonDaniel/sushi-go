@@ -12,18 +12,18 @@ const PLAYER_POSITIONS = [
   { x: 0, y: 20 },  // RIGHT
 ]
 
-const CARDS = {
-  'Tempura': 14,
-  'Sashimi': 14,
-  'Dumpling': 14,
-  'Maki': 26,
-  'Salmon Nigri': 10,
-  'Squid Nigri': 5,
-  'Egg': 5,
-  'Pudding': 10,
-  'Wasabi': 6,
-  'Chopsticks': 4,
-};
+const CARDS = [
+  { name: 'Tempura', count: 14 },
+  { name: 'Sashimi', count: 14 },
+  { name: 'Dumpling', count: 14 },
+  { name: 'Maki', count: 26 },
+  { name: 'Salmon Nigri', count: 10 },
+  { name: 'Squid Nigri', count: 5 },
+  { name: 'Egg', count: 5 },
+  { name: 'Pudding', count: 10 },
+  { name: 'Wasabi', count: 6 },
+  { name: 'Chopsticks', count: 4 },
+];
 
 const CARD_SIZE = {
   width: 25,
@@ -267,10 +267,10 @@ function setupCanvas() {
 
 function setupDeck() {
   deck = []
-  for (const card in CARDS) {
-    let cardCount = CARDS[card]
-    for (let i = 0; i < cardCount; i++) {
-      deck.push(new Card(card))
+  for (const card of CARDS) {
+    for (let i = 0; i < card.count; i++) {
+      deck.push(new Card(card.name))
+    }
     }
   }
 }
