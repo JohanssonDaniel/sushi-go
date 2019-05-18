@@ -60,14 +60,16 @@ let remainingCards = 0;
 let remainingRounds = 0;
 
 let currentRound = 1;
-let currentGameState = gameState.STARTING_GAME;
+let currentGameState = GAME_STATE.STARTING_GAME;
 
 let ctx;
+
 let canvas = {
   element: null,
   offsetX: 0,
   offsetY: 0,
 };
+
 let windowSettings = {
   width: window.innerWidth,
   height: window.innerHeight
@@ -207,13 +209,14 @@ class Card {
   }
 
   print() {
-    console.log(this.name, this.x, this.y)
+    console.log(this.name, this._x, this._y)
   }
 
 }
 
-// Shuffles an array based on https://en.wikipedia.org/wiki/Fisher–Yates_shuffle#Modern_method
 function shuffleDeck() {
+// Shuffles an array based on https://en.wikipedia.org/wiki/Fisher–Yates_shuffle#Modern_method
+
   // --To shuffle an array a of n elements(indices 0..n - 1):
   // for i from n−1 downto 1 do
   for (let i = deck.length - 1; i > 0; i--) {
@@ -335,7 +338,7 @@ function playersHasPickedCards() {
 
 function setAllPlayerState(state) {
   players.forEach(player => {
-    player.updateState(state);
+    player.currentState = state;
   });
 }
 
@@ -345,7 +348,7 @@ function setGameState(state) {
 
 function allPlayersHaveChosen() {
   for (const player of players) {
-    if(player.currentState != PLAYER_STATE.HAS_CHOSEN_CARD) {
+    if (player.currentState != PLAYER_STATE.HAS_CHOSEN_CARD) {
       return false;
     }
   }
