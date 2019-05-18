@@ -1,11 +1,18 @@
 
-const playerCount = 2;
-const playerNames = ["Danne", "Nany"];
+const PLAYER_COUNT = 2;
+const PLAYER_NAMES = ["Danne", "Nany"];
 
-const totalCards = 108;
-const totalRounds = 3;
+const TOTAL_CARDS = 108;
+const TOTAL_ROUNDS = 3;
 
-const cards = {
+const PLAYER_POSITIONS = [
+  {x: 0, y: 0}, // TOP
+  {x: 0, y: 100},  // LEFT
+  {x: 0, y: 20},  // BOTTOM
+  {x: 0, y: 20},  // RIGHT
+]
+
+const CARDS = {
   'Tempura': 14,
   'Sashimi': 14,
   'Dumpling': 14,
@@ -18,21 +25,26 @@ const cards = {
   'Chopsticks': 4,
 };
 
-const cardsPerPlayer = {
+const CARD_SIZE = {
+  width: 25,
+  height: 50
+}
+
+const CARDS_PER_PLAYER = {
   2: 10,
   3: 9,
   4: 8,
   5: 7,
 }
 
-const playerState = {
+const PLAYER_STATE = {
   WAITING: "waiting",
   CHOOSING_CARD: "choosing_card",
-  PUTTING_DOWN_CARD: "putting_down_card",
-  PICKING_HAND: "picking_hand"
+  HAS_CHOSEN_CARD: "has_chosen_card",
+  TAKE_UP_HAND: "take_up_hand"
 };
 
-const gameState = {
+const GAME_STATE = {
   STARTING_GAME: "starting_game",
   DEALING_CARDS_TO_PLAYERS: "dealing_cards_to_players",
   PLAYERS_CHOOSE_CARD: "players_choose_card",
@@ -73,7 +85,7 @@ class Player {
     this.name = name
     this.hand = cards
     this.revealedCards = []
-    this.currentState = playerState.WAITING
+    this._currentState = PLAYER_STATE.WAITING
   }
 
   addCardToHand(card) {
@@ -87,6 +99,7 @@ class Player {
   pickCard(cardIndex) {
     let card = this.hand.splice(cardIndex, 1);
     this.revealedCards.push(card)
+    this._currentState = PLAYER_STATE.HAS_CHOSEN_CARD; 
     console.log(this.name + ' has picked ' + card.name);
   }
 
@@ -131,7 +144,8 @@ class Card {
   draw() {
     // Draw the card
     ctx.beginPath();
-    ctx.rect(this.x, this.y, this.width, this.height);
+      CARD_SIZE.width, 
+      CARD_SIZE.height
     ctx.fillStyle = "red";
     ctx.fill();
   }
@@ -173,7 +187,7 @@ function setupCanvas() {
 
   // Add event listener for `click` events.
   canvas.element.addEventListener('click', event => {
-    if (currentGameState == gameState.PLAYERS_CHOOSE_CARD) {
+    if (currentGameState == GAME_STATE.PLAYERS_CHOOSE_CARD) {
 
       let x = event.pageX - canvas.offsetX;
       let y = event.pageY - canvas.offsetY;
@@ -182,11 +196,9 @@ function setupCanvas() {
       players.forEach(player => {
         for (let i = 0; i < player.hand.length; i++) {
           const card = player.hand[i];
-          if ((x > card.x && x < card.x + card.width) &&
-            (y > card.y && y < card.y + card.height)) {
-            card.print();
-            player.pickCard();
-            break;
+          if ((x > card.x && x < card.x + CARD_SIZE.width) &&
+            (y > card.y && y < card.y + CARD_SIZE.height)) {
+            player.pickCard(i);
           }
         }
       });
@@ -196,8 +208,8 @@ function setupCanvas() {
 
 function setupDeck() {
   deck = []
-  for (const card in cards) {
-    let cardCount = cards[card]
+  for (const card in CARDS) {
+    let cardCount = CARDS[card]
     for (let i = 0; i < cardCount; i++) {
       deck.push(new Card(card, i * 25, 50))
     }
@@ -206,17 +218,16 @@ function setupDeck() {
 
 function setupPlayers() {
   players = []
-  playerNames.forEach(name => {
-    players.push(new Player(name))
+  PLAYER_NAMES.forEach((name, i) => {
+    players.push(new Player(name, [], PLAYER_POSITIONS[i]))
   });
 }
 
 function dealOneHand() {
-  remainingCards = cardsPerPlayer[playerCount];
-
+  remainingCards = CARDS_PER_PLAYER[PLAYER_COUNT];
   // Deal cards
   for (let noCards = remainingCards; noCards > 0; noCards--) {
-    for (let playerNum = 0; playerNum < playerCount; playerNum++) {
+    for (let playerNum = 0; playerNum < PLAYER_COUNT; playerNum++) {
       players[playerNum].addCardToHand(deck.shift())
     }
   }
@@ -234,7 +245,7 @@ function waitForPlayers() {
   let waitingForPlayers = false;
   do {
     waitingForPlayers = players.every((player) => {
-      player.currentState == playerState.WAITING
+      player.currentState == PLAYER_STATE.WAITING
     });
   } while (!waitingForPlayers)
   console.log('Finished waiting for players')
@@ -244,7 +255,7 @@ function playersHasPickedCards() {
   waitingForPlayers = false;
   do {
     waitingForPlayers = players.some((player) => {
-      player.currentState != playerState.WAITING
+      player.currentState != PLAYER_STATE.WAITING
     });
   } while (waitingForPlayers)
   console.log('Finished waiting for players')
@@ -261,35 +272,41 @@ function setGameState(state) {
 }
 
 function allPlayersHaveChosen() {
-  return players.every(player => {
-    player.currentState == playerState.PUTTING_DOWN_CARD;
-  })
+  for (const player of players) {
+    if(player.currentState != PLAYER_STATE.HAS_CHOSEN_CARD) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function loop() {
   console.log(currentGameState)
   switch (currentGameState) {
-    case gameState.STARTING_GAME:
+    case GAME_STATE.STARTING_GAME:
       return;
-    case gameState.DEALING_CARDS_TO_PLAYERS:
+    case GAME_STATE.DEALING_CARDS_TO_PLAYERS:
       dealOneHand();
-      setGameState(gameState.PLAYERS_CHOOSE_CARD);
+      setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
       break;
-    case gameState.PLAYERS_CHOOSE_CARD:
+    case GAME_STATE.PLAYERS_CHOOSE_CARD:
       if (allPlayersHaveChosen()) {
         remainingCards -= 1
-        setGameState(gameState.PLAYERS_REVEAL_CARD);
-        setAllPlayerState(playerState.PICKING_HAND);
+        setGameState(GAME_STATE.PLAYERS_REVEAL_CARD);
+        setAllPlayerState(PLAYER_STATE.TAKE_UP_HAND);
       }
       break;
-    case gameState.PLAYERS_REVEAL_CARD:
+    case GAME_STATE.PLAYERS_REVEAL_CARD:
       if (remainingCards == 0) {
-        if (currentRound == totalRounds) {
-          setGameState(gameState.CALCULATING_SCORES);
+        if (currentRound == TOTAL_ROUNDS) {
+          setGameState(GAME_STATE.CALCULATING_SCORES);
         } else {
           currentRound += 1;
-          setGameState(gameState.DEALING_CARDS_TO_PLAYERS);
+          setGameState(GAME_STATE.DEALING_CARDS_TO_PLAYERS);
         }
+        }
+      else {
+        setGameState(GAME_STATE.PLAYERS_PICKUP_HAND);
       }
     default:
       break;
