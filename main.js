@@ -364,6 +364,7 @@ function loop() {
     case GAME_STATE.PLAYERS_CHOOSE_CARD:
       if (allPlayersHaveChosen()) {
         remainingCards -= 1
+        setRemainingCardsTitle()
         setGameState(GAME_STATE.PLAYERS_REVEAL_CARD);
         setAllPlayerState(PLAYER_STATE.TAKE_UP_HAND);
       }
