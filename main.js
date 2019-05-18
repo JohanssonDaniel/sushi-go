@@ -57,6 +57,7 @@ let deck = [];
 let players = [];
 let tableCards = [];
 let remainingCards = 0;
+let remainingRounds = 0;
 
 let currentRound = 1;
 let currentGameState = gameState.STARTING_GAME;
