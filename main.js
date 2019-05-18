@@ -93,15 +93,31 @@ class Player {
 
   addCardToHand(card) {
     this.hand.push(card)
+    this.hand.forEach((card, i) => {
+      card.x = this.x + i * CARD_SIZE.width * 2;
+      card.y = this.y;
+    })
   }
 
   updateHand(hand) {
     this.hand = hand
+    this.hand.forEach((card, i) => {
+      card.x = this.x + i * CARD_SIZE.width * 2;
+      card.y = this.y;
+    });
   }
 
   pickCard(cardIndex) {
-    let card = this.hand.splice(cardIndex, 1);
+    let card = this.hand.splice(cardIndex, 1)[0];
+    card.isPicked = true;
     this.revealedCards.push(card)
+
+    this.revealedCards.forEach((card, i) => {
+      card.x = this.x + CARD_SIZE.width * i * 2;
+      card.y = this.y + CARD_SIZE.height;
+
+    })
+
     this._currentState = PLAYER_STATE.HAS_CHOSEN_CARD; 
     console.log(this.name + ' has picked ' + card.name);
   }
