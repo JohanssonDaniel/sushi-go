@@ -147,9 +147,12 @@ class Player {
     });
   }
 
-  drawHand() {
+  paintHand() {
     this.hand.forEach(card => {
-      card.draw();
+      card.paint();
+    });
+    this.revealedCards.forEach(card => {
+      card.paint();
     });
   }
 }
@@ -163,8 +166,7 @@ class Card {
     this.height = height
   }
 
-  draw() {
-    // Draw the card
+  paint() {
     ctx.beginPath();
       CARD_SIZE.width, 
       CARD_SIZE.height
@@ -337,7 +339,7 @@ function loop() {
   ctx.clearRect(0, 0, canvas.element.width, canvas.element.height);
   
   players.forEach(player => {
-    player.drawHand();
+    player.paintHand();
   });
   // let numberOfCards = cardsPerPlayer[playerCount];
 
