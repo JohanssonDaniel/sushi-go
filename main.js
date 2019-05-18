@@ -193,7 +193,11 @@ class Card {
     ctx.beginPath();
       CARD_SIZE.width, 
       CARD_SIZE.height
+    if (this._isPicked) {
+      ctx.fillStyle = "blue";
+    } else {
     ctx.fillStyle = "red";
+    }
     ctx.fill();
   }
 
