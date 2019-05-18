@@ -165,6 +165,30 @@ class Card {
     this._isPicked = isPicked
   }
 
+  get isPicked() {
+    return this._isPicked;
+  }
+
+  set isPicked(newState) {
+    this._isPicked = newState;
+  }
+
+  get x() {
+    return this._x;
+  }
+
+  set x(newX) {
+    this._x = newX;
+  }
+
+  get y() {
+    return this._y;
+  }
+
+  set y(newY) {
+    this._y = newY;
+  }
+
   paint() {
     ctx.beginPath();
       CARD_SIZE.width, 
