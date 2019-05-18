@@ -128,9 +128,12 @@ class Player {
     return table;
   }
 
-  updateState(state) {
-    this.currentState = state;
-    console.log(this.name + ' is ' + this.currentState);
+  get currentState() {
+    return this._currentState;
+  }
+
+  set currentState(newState) {
+    this._currentState = newState;
   }
 
   printPlayer() {
