@@ -304,7 +304,13 @@ function setup() {
   setupDeck();
   shuffleDeck();
   setupPlayers();
-  setGameState(gameState.DEALING_CARDS_TO_PLAYERS)
+  dealOneHand();
+
+  setRemainingCardsTitle();
+
+  remainingRounds = TOTAL_ROUNDS
+  setRemainingRoundsTitle();
+  setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
 }
 
 function waitForPlayers() {
