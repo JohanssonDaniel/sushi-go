@@ -229,12 +229,12 @@ function shuffleDeck() {
 function resizeCanvas() {
   windowSettings.width = window.innerWidth;
   windowSettings.height = window.innerHeight;
-  canvas.width = windowSettings.width;
-  canvas.height = windowSettings.height;
+  canvas.element.width = windowSettings.width;
+  canvas.element.height = windowSettings.height;
 }
 
 function setupCanvas() {
-  canvas.element = document.getElementById('game');
+  canvas.element = document.getElementById('canvas');
   canvas.offsetX = canvas.element.offsetLeft;
   canvas.offsetY = canvas.element.offsetTop;
 
