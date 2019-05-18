@@ -82,9 +82,9 @@ window.requestAnimFrame = window.requestAnimationFrame ||
 
 // define Player constructor
 class Player {
-  constructor(name = "Default", cards = []) {
+  constructor(name = "Default", hand = [], position) {
     this.name = name
-    this.hand = cards
+    this.hand = hand
     this.revealedCards = []
     this._currentState = PLAYER_STATE.WAITING
   }
@@ -93,8 +93,8 @@ class Player {
     this.hand.push(card)
   }
 
-  updateHand(cards) {
-    this.hand = cards
+  updateHand(hand) {
+    this.hand = hand
   }
 
   pickCard(cardIndex) {
