@@ -267,7 +267,7 @@ function setupDeck() {
   for (const card in CARDS) {
     let cardCount = CARDS[card]
     for (let i = 0; i < cardCount; i++) {
-      deck.push(new Card(card, i * 25, 50))
+      deck.push(new Card(card))
     }
   }
 }
