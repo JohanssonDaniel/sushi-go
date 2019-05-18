@@ -289,6 +289,16 @@ function dealOneHand() {
   }
 }
 
+function setRemainingCardsTitle() {
+  let title = document.getElementById('cards-remaining');
+  title.innerText = 'Remaining Rounds: ' + remainingCards
+}
+
+function setRemainingRoundsTitle() {
+  let title = document.getElementById('rounds-remaining');
+  title.innerText = 'Remaining Rounds: ' + remainingRounds
+}
+
 function setup() {
   setupCanvas();
   setupDeck();
