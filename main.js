@@ -190,9 +190,14 @@ class Card {
   }
 
   paint() {
+    // paint the card
     ctx.beginPath();
+    ctx.rect(
+      this._x,
+      this._y,
       CARD_SIZE.width, 
       CARD_SIZE.height
+    );
     if (this._isPicked) {
       ctx.fillStyle = "blue";
     } else {
