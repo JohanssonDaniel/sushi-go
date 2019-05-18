@@ -257,13 +257,14 @@ function setupCanvas() {
 
       // Collision detection between clicked offset and element.
       players.forEach(player => {
-        for (let i = 0; i < player.hand.length; i++) {
-          const card = player.hand[i];
-          if ((x > card.x && x < card.x + CARD_SIZE.width) &&
-            (y > card.y && y < card.y + CARD_SIZE.height)) {
-            player.pickCard(i);
+        if(player.currentState == PLAYER_STATE.CHOOSING_CARD)
+          for (let i = 0; i < player.hand.length; i++) {
+            const card = player.hand[i];
+            if ((x > card.x && x < card.x + CARD_SIZE.width) &&
+              (y > card.y && y < card.y + CARD_SIZE.height)) {
+              player.pickCard(i);
+            }
           }
-        }
       });
     }
   }, false);
@@ -304,7 +305,7 @@ function dealOneHand() {
 
 function setRemainingCardsTitle() {
   let title = document.getElementById('cards-remaining');
-  title.innerText = 'Remaining Rounds: ' + remainingCards
+  title.innerText = 'Remaining Cards: ' + remainingCards
 }
 
 function setRemainingRoundsTitle() {
@@ -324,6 +325,7 @@ function setup() {
 
   remainingRounds = TOTAL_ROUNDS
   setRemainingRoundsTitle();
+  setAllPlayerState(PLAYER_STATE.CHOOSING_CARD);
   setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
 }
 
@@ -373,15 +375,15 @@ function loop() {
       return;
     case GAME_STATE.DEALING_CARDS_TO_PLAYERS:
       dealOneHand();
-      setAllPlayerState(PLAYER_STATE.WAITING)
+      setAllPlayerState(PLAYER_STATE.CHOOSING_CARD)
       setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
       break;
     case GAME_STATE.PLAYERS_CHOOSE_CARD:
       if (allPlayersHaveChosen()) {
         remainingCards -= 1
         setRemainingCardsTitle()
-        setGameState(GAME_STATE.PLAYERS_REVEAL_CARD);
         setAllPlayerState(PLAYER_STATE.REVEAL_HAND);
+        setGameState(GAME_STATE.PLAYERS_REVEAL_CARD);
       }
       break;
     case GAME_STATE.PLAYERS_REVEAL_CARD:
