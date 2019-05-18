@@ -158,12 +158,11 @@ class Player {
 }
 
 class Card {
-  constructor(name = "DefaultCard", x, y, width = 25, height = 50) {
+  constructor(name = "DefaultCard", isPicked = false) {
     this.name = name
-    this.x = x
-    this.y = y
-    this.width = width
-    this.height = height
+    this._x = 0
+    this._y = 0
+    this._isPicked = isPicked
   }
 
   paint() {
