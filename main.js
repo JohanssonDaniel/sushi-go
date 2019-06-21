@@ -93,6 +93,9 @@ class Player {
     this.y = position.y
     this.revealedCards = []
     this._currentState = PLAYER_STATE.WAITING
+    this.currentScore = 0
+    this.currentMakiCount = 0
+    this.currentPuddingCount = 0
   }
 
   addCardToHand(card) {
@@ -216,6 +219,108 @@ class Card {
     console.log(this.name, this._x, this._y)
   }
 
+}
+
+function calculateTempuraScore(tempuraCount) {
+  score = 0
+  while(tempuraCount % 2 == 0) {
+    tempuraCount /= 2;
+    score += 5;
+  }
+  return score
+}
+
+function calculateSashimiScore(sashimiCount) {
+  score = 0
+  while(sashimiCount % 3 == 0) {
+    sashimiCount /= 3;
+    score += 10;
+  }
+  return score
+}
+
+function calculateDumplingScore(dumplingCount) {
+  dumplingScores = [1,3,6,10,15];
+  if (dumplingCount > dumplingScores.length())
+    return 15;
+  else
+    return dumplingScores[dumplingCount];
+}
+
+function calculatePlayerScore(player) {
+  let score = 0;
+  let makiCount = 0;
+  let tempuraCount = 0;
+  let sashimiCount = 0;
+  let puddingCount = 0;
+  let dumplingCount = 0;
+  let hasWasabi = false;
+  
+  player.revealedCards.forEach(card => {
+    if(card.name == 'Tempura') {
+      tempuraCount++;
+    }
+    else if (card.name == 'Dumpling') {
+      dumplingCount++;
+    }
+    else if (card.name == 'Sashimi') {
+      sashimiCount++;
+    }
+    else if (card.name == 'Maki') {
+      makiCount++;
+    }
+    else if (card.name == 'Pudding') {
+      puddingCount++;
+    }
+    else if (card.name == 'Wasabi') {
+      hasWasabi = true;
+    }
+    else if (card.name == 'Salmon Nigri') {
+      if (hasWasabi) {
+        hasWasabi = false;
+        score += 3*3;
+      }
+      else {
+        score += 3;
+      }
+    }
+    else if (card.name == 'Squid Nigri') {
+      if (hasWasabi) {
+        hasWasabi = false;
+        score += 3*2;
+      }
+      else {
+        score += 2;
+      }
+    }
+    else if (card.name == 'Egg Nigri') {
+      if (hasWasabi) {
+        hasWasabi = false;
+        score += 3*1;
+      }
+      else {
+        score += 1;
+      }
+    }
+    else if (card.name == 'Chopsticks') {}
+    else {
+      console.log('Wrong card', card.name);
+    }
+  });
+
+  score += calculateTempuraScore(tempuraCount);
+  score += calculateSashimiScore(sashimiCount);
+  score += calculateDumplingScore(dumplingCount);
+  
+  player.currentScore += score;
+  player.currentMakiCount += makiCount;
+  player.currentPuddingCount += puddingCount;
+}
+
+function calculateAllPlayerScore() {
+  players.forEach((player) => {
+    calculatePlayerScore(player);
+  })
 }
 
 function shuffleDeck() {
