@@ -19,7 +19,7 @@ const CARDS = [
   { name: 'Maki', count: 26, color: 'green' },
   { name: 'Salmon Nigri', count: 10, color: 'yellow' },
   { name: 'Squid Nigri', count: 5, color: 'gray' },
-  { name: 'Egg', count: 5, color: 'pink' },
+  { name: 'Egg Nigri', count: 5, color: 'pink' },
   { name: 'Pudding', count: 10, color: 'orange' },
   { name: 'Wasabi', count: 6, color: 'lightblue' },
   { name: 'Chopsticks', count: 4, color: 'pink' },
