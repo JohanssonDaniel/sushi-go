@@ -437,6 +437,8 @@ function setup() {
 
   remainingRounds = TOTAL_ROUNDS
   setRemainingRoundsTitle();
+
+  setPlayerScoreTitle();
   setAllPlayerState(PLAYER_STATE.CHOOSING_CARD);
   setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
 }
