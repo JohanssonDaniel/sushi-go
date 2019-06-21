@@ -40,6 +40,7 @@ const CARDS_PER_PLAYER = {
 const PLAYER_STATE = {
   WAITING: "is_waiting",
   CHOOSING_CARD: "will_choose_card",
+  HAS_CHOSEN_CARD: "has_chosen_card",
   REVEAL_CARD: "will_reveal_card",
   PUT_DOWN_HAND: "will_put_down_hand",
   PICKUP_HAND: "will_take_up_hand"
@@ -125,7 +126,7 @@ class Player {
 
     })
 
-    this._currentState = PLAYER_STATE.HAS_CHOSEN_CARD;
+    this.currentState = PLAYER_STATE.HAS_CHOSEN_CARD;
     console.log(this.name + ' has picked ' + card.name);
   }
 
