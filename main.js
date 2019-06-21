@@ -469,17 +469,10 @@ function setAllPlayerState(state) {
   });
 }
 
-function setGameState(state) {
-  currentGameState = state;
-}
-
 function allPlayersHaveChosen() {
-  for (const player of players) {
-    if (player.currentState != PLAYER_STATE.HAS_CHOSEN_CARD) {
-      return false;
-    }
-  }
-  return true;
+  return players.every((player) => {
+    return player.currentState == PLAYER_STATE.HAS_CHOSEN_CARD
+  });
 }
 
 function loop() {
