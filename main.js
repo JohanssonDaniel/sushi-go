@@ -425,6 +425,11 @@ function setPlayerScoreTitle() {
   title1.innerText = 'Player 1 Score: ' + players[0].currentScore;
   title2.innerText = 'Player 2 Score: ' + players[1].currentScore;
 }
+
+function setGameState(state) {
+  currentGameState = state;
+}
+
 function setup() {
   setupCanvas();
   setupDeck();
@@ -441,26 +446,6 @@ function setup() {
   setPlayerScoreTitle();
   setAllPlayerState(PLAYER_STATE.CHOOSING_CARD);
   setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
-}
-
-function waitForPlayers() {
-  let waitingForPlayers = false;
-  do {
-    waitingForPlayers = players.every((player) => {
-      player.currentState == PLAYER_STATE.WAITING
-    });
-  } while (!waitingForPlayers)
-  console.log('Finished waiting for players')
-}
-
-function playersHasPickedCards() {
-  waitingForPlayers = false;
-  do {
-    waitingForPlayers = players.some((player) => {
-      player.currentState != PLAYER_STATE.WAITING
-    });
-  } while (waitingForPlayers)
-  console.log('Finished waiting for players')
 }
 
 function setAllPlayerState(state) {
@@ -482,40 +467,42 @@ function loop() {
       return;
     case GAME_STATE.DEALING_CARDS_TO_PLAYERS:
       dealOneHand();
-      setAllPlayerState(PLAYER_STATE.CHOOSING_CARD)
+      setAllPlayerState(PLAYER_STATE.CHOOSING_CARD);
       setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
       break;
     case GAME_STATE.PLAYERS_CHOOSE_CARD:
       if (allPlayersHaveChosen()) {
         remainingCards -= 1
-        setRemainingCardsTitle()
+        setRemainingCardsTitle();
         setAllPlayerState(PLAYER_STATE.REVEAL_HAND);
         setGameState(GAME_STATE.PLAYERS_REVEAL_CARD);
       }
       break;
     case GAME_STATE.PLAYERS_REVEAL_CARD:
       if (remainingCards == 0) {
+        calculateAllPlayerScore();
+        setPlayerScoreTitle();
         if (currentRound == TOTAL_ROUNDS) {
           setAllPlayerState(PLAYER_STATE.WAITING)
           setGameState(GAME_STATE.CALCULATING_SCORES);
         } else {
           currentRound += 1;
-          setAllPlayerState(PLAYER_STATE.WAITING)
+          setAllPlayerState(PLAYER_STATE.WAITING);
           setGameState(GAME_STATE.DEALING_CARDS_TO_PLAYERS);
         }
       }
       else {
-        setAllPlayerState(PLAYER_STATE.PUT_DOWN_HAND)
+        setAllPlayerState(PLAYER_STATE.PUT_DOWN_HAND);
         setGameState(GAME_STATE.PLAYERS_PUT_DOWN_HAND);
       }
       break;
     case GAME_STATE.PLAYERS_PUT_DOWN_HAND:
       players.forEach((player, i) => {
         let playerHand = player.putHandOnTable();
-        let nextPlayerIDX = i == players.length - 1 ? 0 : i + 1;
+        let nextPlayerIDX = (i == players.length - 1) ? 0 : i + 1;
         handsOnTable[nextPlayerIDX] = playerHand;
-      })
-      setAllPlayerState(PLAYER_STATE.PICKUP_HAND)
+      });
+      setAllPlayerState(PLAYER_STATE.PICKUP_HAND);
       setGameState(GAME_STATE.PLAYERS_PICKUP_HAND);
       break;
     case GAME_STATE.PLAYERS_PICKUP_HAND:
@@ -523,8 +510,9 @@ function loop() {
         let hand = handsOnTable[i];
         player.pickupHand(hand);
       })
-      setAllPlayerState(PLAYER_STATE.CHOOSING_CARD)
+      setAllPlayerState(PLAYER_STATE.CHOOSING_CARD);
       setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
+      break;
     default:
       break;
   }
@@ -534,32 +522,7 @@ function loop() {
   players.forEach(player => {
     player.paintHand();
   });
-  // let numberOfCards = cardsPerPlayer[playerCount];
 
-  // // Play cards
-  // do {
-  //   waitForPlayers();
-  //   setAllPlayerState(playerState.CHOOSING_CARD)
-  //   // Pick the card from the hand
-  //   playersHasPickedCards();
-  //   // for (let playerNum = 0; playerNum < playerCount; playerNum++) {
-  //   //   let player = players[playerNum]
-  //   //   console.log(player.name + ' picked: ' + player.pickCard())
-  //   //   tableCards[playerNum] = player.putHandOnTable()
-  //   // }
-  //   // Pick up cards from the left
-  //   // for (let playerNum = 0; playerNum < playerCount; playerNum++) {
-  //   //   let player = players[playerNum]
-  //   //   if (playerNum < (playerCount - 1)) {
-  //   //     player.updateHand(tableCards[playerNum + 1])
-  //   //     tableCards[playerNum + 1] = []
-  //   //   }
-  //   //   else {
-  //   //     player.updateHand(tableCards[0])
-  //   //     tableCards[0] = []
-  //   //   }
-  //   // } 
-  // } while (--numberOfCards > 0)
   window.requestAnimFrame(loop);
 }
 
