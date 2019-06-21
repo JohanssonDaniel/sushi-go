@@ -313,6 +313,12 @@ function setRemainingRoundsTitle() {
   title.innerText = 'Remaining Rounds: ' + remainingRounds
 }
 
+function setPlayerScoreTitle() {
+  let title1 = document.getElementById('player1-score');
+  let title2 = document.getElementById('player2-score');
+  title1.innerText = 'Player 1 Score: ' + players[0].currentScore;
+  title2.innerText = 'Player 2 Score: ' + players[1].currentScore;
+}
 function setup() {
   setupCanvas();
   setupDeck();
