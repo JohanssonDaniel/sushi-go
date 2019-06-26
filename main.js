@@ -5,19 +5,12 @@ const PLAYER_NAMES = ["Danne", "Nany"];
 const TOTAL_CARDS = 108;
 const TOTAL_ROUNDS = 3;
 
-const PLAYER_POSITIONS = [
-  { x: 0, y: 0 }, // TOP
-  { x: 0, y: 100 },  // LEFT
-  { x: 0, y: 20 },  // BOTTOM
-  { x: 0, y: 20 },  // RIGHT
-]
-
 const CARDS = [
   { name: 'Tempura', count: 14, color: 'black' },
   { name: 'Sashimi', count: 14, color: 'red' },
   { name: 'Dumpling', count: 14, color: 'blue' },
   { name: 'Maki', count: 26, color: 'green' },
-  { name: 'Salmon Nigri', count: 10, color: 'yellow' },
+  { name: 'Salmon Nigri', count: 10, color: 'purple' },
   { name: 'Squid Nigri', count: 5, color: 'gray' },
   { name: 'Egg Nigri', count: 5, color: 'pink' },
   { name: 'Pudding', count: 10, color: 'orange' },
@@ -26,8 +19,13 @@ const CARDS = [
 ];
 
 const CARD_SIZE = {
-  width: 25,
-  height: 50
+  width: 100,
+  height: 150
+}
+
+const CARD_MARGINS = {
+  x: 10,
+  y: 0
 }
 
 const CARDS_PER_PLAYER = {
@@ -55,6 +53,13 @@ const GAME_STATE = {
   PLAYERS_PICKUP_HAND: "players_pickup_hand",
   CALCULATING_SCORES: "calculating_scores"
 };
+
+const PLAYER_POSITIONS = [
+  { x: 0, y: 0 }, // First
+  { x: 0, y: CARD_SIZE.height * 2 },  // Second
+  { x: 0, y: 20 },  // Third
+  { x: 0, y: 20 },  // Fourth
+]
 
 let deck = [];
 let players = [];
@@ -102,7 +107,7 @@ class Player {
   addCardToHand(card) {
     this.hand.push(card)
     this.hand.forEach((card, i) => {
-      card.x = this.x + i * CARD_SIZE.width * 2;
+      card.x = this.x + i * (CARD_SIZE.width + CARD_MARGINS.x);
       card.y = this.y;
     })
   }
@@ -110,7 +115,7 @@ class Player {
   pickupHand(hand) {
     this.hand = hand
     this.hand.forEach((card, i) => {
-      card.x = this.x + i * CARD_SIZE.width * 2;
+      card.x = this.x + i * (CARD_SIZE.width + CARD_MARGINS.x);
       card.y = this.y;
     });
   }
@@ -121,9 +126,8 @@ class Player {
     this.revealedCards.push(card)
 
     this.revealedCards.forEach((card, i) => {
-      card.x = this.x + CARD_SIZE.width * i * 2;
+      card.x = this.x + i * (CARD_SIZE.width + CARD_MARGINS.x);
       card.y = this.y + CARD_SIZE.height;
-
     })
 
     this.currentState = PLAYER_STATE.HAS_CHOSEN_CARD;
@@ -201,19 +205,23 @@ class Card {
   paint() {
     // paint the card
     ctx.beginPath();
-    ctx.rect(
+    
+    ctx.fillStyle = this.color;
+    ctx.fillRect(
       this._x,
       this._y,
       CARD_SIZE.width,
       CARD_SIZE.height
     );
-    if (this._isPicked) {
-      ctx.fillStyle = "darkgreen";
-      ctx.stroke()
-    } else {
-      ctx.fillStyle = this.color;
-    }
-    ctx.fill();
+
+    ctx.fillStyle = "white";
+    ctx.font = "30px Arial";
+    ctx.fillText(
+      this.name,
+      this.x,
+      this.y + CARD_SIZE.height / 2,
+      CARD_SIZE.width
+    )
   }
 
   print() {
@@ -242,7 +250,7 @@ function calculateSashimiScore(sashimiCount) {
 
 function calculateDumplingScore(dumplingCount) {
   dumplingScores = [1,3,6,10,15];
-  if (dumplingCount > dumplingScores.length())
+  if (dumplingCount > dumplingScores.length)
     return 15;
   else
     return dumplingScores[dumplingCount];
@@ -256,7 +264,7 @@ function calculatePlayerScore(player) {
   let puddingCount = 0;
   let dumplingCount = 0;
   let hasWasabi = false;
-  
+
   player.revealedCards.forEach(card => {
     if(card.name == 'Tempura') {
       tempuraCount++;
@@ -312,7 +320,7 @@ function calculatePlayerScore(player) {
   score += calculateTempuraScore(tempuraCount);
   score += calculateSashimiScore(sashimiCount);
   score += calculateDumplingScore(dumplingCount);
-  
+
   player.currentScore += score;
   player.currentMakiCount += makiCount;
   player.currentPuddingCount += puddingCount;
@@ -461,7 +469,6 @@ function allPlayersHaveChosen() {
 }
 
 function loop() {
-  console.log(currentGameState)
   switch (currentGameState) {
     case GAME_STATE.STARTING_GAME:
       return;
