@@ -1,0 +1,31 @@
+{
+  "name": "sushi-go",
+  "version": "1.0.0",
+  "description": "Browser version of the Awesome card game!",
+  "main": "main.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "jsdom": "^15.1.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.18.0",
+    "mocha": "^6.1.4"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JohanssonDaniel/sushi-go.git"
+  },
+  "author": "Daniel Johansson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JohanssonDaniel/sushi-go/issues"
+  },
+  "homepage": "https://github.com/JohanssonDaniel/sushi-go#readme"
+}

@@ -1,8 +1,7 @@
-
 const PLAYER_COUNT = 2;
-const PLAYER_NAMES = ["Danne", "Nany"];
+const PLAYER_NAMES = ['Danne', 'Nany'];
 
-const TOTAL_CARDS = 108;
+// const TOTAL_CARDS = 108;
 const TOTAL_ROUNDS = 3;
 
 const CARDS = [
@@ -20,46 +19,46 @@ const CARDS = [
 
 const CARD_SIZE = {
   width: 100,
-  height: 150
-}
+  height: 150,
+};
 
 const CARD_MARGINS = {
   x: 10,
-  y: 0
-}
+  y: 0,
+};
 
 const CARDS_PER_PLAYER = {
   2: 10,
   3: 9,
   4: 8,
   5: 7,
-}
+};
 
 const PLAYER_STATE = {
-  WAITING: "is_waiting",
-  CHOOSING_CARD: "will_choose_card",
-  HAS_CHOSEN_CARD: "has_chosen_card",
-  REVEAL_CARD: "will_reveal_card",
-  PUT_DOWN_HAND: "will_put_down_hand",
-  PICKUP_HAND: "will_take_up_hand"
+  WAITING: 'is_waiting',
+  CHOOSING_CARD: 'will_choose_card',
+  HAS_CHOSEN_CARD: 'has_chosen_card',
+  REVEAL_CARD: 'will_reveal_card',
+  PUT_DOWN_HAND: 'will_put_down_hand',
+  PICKUP_HAND: 'will_take_up_hand',
 };
 
 const GAME_STATE = {
-  STARTING_GAME: "starting_game",
-  DEALING_CARDS_TO_PLAYERS: "dealing_cards_to_players",
-  PLAYERS_CHOOSE_CARD: "players_choose_card",
-  PLAYERS_REVEAL_CARD: "players_reveal_card",
-  PLAYERS_PUT_DOWN_HAND: "players_put_down_hand",
-  PLAYERS_PICKUP_HAND: "players_pickup_hand",
-  CALCULATING_SCORES: "calculating_scores"
+  STARTING_GAME: 'starting_game',
+  DEALING_CARDS_TO_PLAYERS: 'dealing_cards_to_players',
+  PLAYERS_CHOOSE_CARD: 'players_choose_card',
+  PLAYERS_REVEAL_CARD: 'players_reveal_card',
+  PLAYERS_PUT_DOWN_HAND: 'players_put_down_hand',
+  PLAYERS_PICKUP_HAND: 'players_pickup_hand',
+  CALCULATING_SCORES: 'calculating_scores',
 };
 
 const PLAYER_POSITIONS = [
   { x: 0, y: 0 }, // First
-  { x: 0, y: CARD_SIZE.height * 2 },  // Second
-  { x: 0, y: 20 },  // Third
-  { x: 0, y: 20 },  // Fourth
-]
+  { x: 0, y: CARD_SIZE.height * 2 }, // Second
+  { x: 0, y: 20 }, // Third
+  { x: 0, y: 20 }, // Fourth
+];
 
 let deck = [];
 let players = [];
@@ -72,48 +71,46 @@ let currentGameState = GAME_STATE.STARTING_GAME;
 
 let ctx;
 
-let canvas = {
+const canvas = {
   element: null,
   offsetX: 0,
   offsetY: 0,
 };
 
-let windowSettings = {
+const windowSettings = {
   width: window.innerWidth,
-  height: window.innerHeight
-}
+  height: window.innerHeight,
+};
 
-window.requestAnimFrame = window.requestAnimationFrame ||
-  window.webkitRequestAnimationFrame ||
-  window.mozRequestAnimationFrame ||
-  function (callback) {
+window.requestAnimFrame = window.requestAnimationFrame
+  || window.webkitRequestAnimationFrame
+  || window.mozRequestAnimationFrame
+  || function setTimeOutCallback(callback) {
     window.setTimeout(callback, 1000 / 60);
   };
 
 // define Player constructor
 class Player {
-  constructor(name = "Default", hand = [], position) {
-    this.name = name
-    this.hand = hand
-    this.x = position.x
-    this.y = position.y
-    this.revealedCards = []
-    this._currentState = PLAYER_STATE.WAITING
-    this.currentScore = 0
-    this.currentMakiCount = 0
-    this.currentPuddingCount = 0
+  constructor(name = 'Default', hand = [], position) {
+    this.name = name;
+    this.hand = hand;
+    this.x = position.x;
+    this.y = position.y;
+    this.revealedCards = [];
+    this._currentState = PLAYER_STATE.WAITING;
+    this.currentScore = 0;
+    this.currentMakiCount = 0;
+    this.currentPuddingCount = 0;
   }
 
   addCardToHand(card) {
-    this.hand.push(card)
-    this.hand.forEach((card, i) => {
-      card.x = this.x + i * (CARD_SIZE.width + CARD_MARGINS.x);
-      card.y = this.y;
-    })
+    card.x = this.x + this.hand.length * (CARD_SIZE.width + CARD_MARGINS.x);
+    card.y = this.y;
+    this.hand.push(card);
   }
 
   pickupHand(hand) {
-    this.hand = hand
+    this.hand = hand;
     this.hand.forEach((card, i) => {
       card.x = this.x + i * (CARD_SIZE.width + CARD_MARGINS.x);
       card.y = this.y;
@@ -121,21 +118,21 @@ class Player {
   }
 
   pickCard(cardIndex) {
-    let card = this.hand.splice(cardIndex, 1)[0];
-    card.isPicked = true;
-    this.revealedCards.push(card)
+    const newCard = this.hand.splice(cardIndex, 1)[0];
+    newCard.isPicked = true;
+    this.revealedCards.push(newCard);
 
     this.revealedCards.forEach((card, i) => {
       card.x = this.x + i * (CARD_SIZE.width + CARD_MARGINS.x);
       card.y = this.y + CARD_SIZE.height;
-    })
+    });
 
     this.currentState = PLAYER_STATE.HAS_CHOSEN_CARD;
-    console.log(this.name + ' has picked ' + card.name);
+    console.log(`${this.name} has picked ${newCard.name}`);
   }
 
   putHandOnTable() {
-    let table = this.hand;
+    const table = this.hand;
     this.hand = [];
     return table;
   }
@@ -149,33 +146,33 @@ class Player {
   }
 
   printPlayer() {
-    console.log(this.name + ' has the hand: ');
-    this.hand.forEach(card => {
-      console.log('\t' + card.name)
+    console.log(`${this.name} has the hand: `);
+    this.hand.forEach((card) => {
+      console.log(`\t ${card.name}`);
     });
-    console.log('And has revealed: ')
-    this.revealedCards.forEach(card => {
-      console.log('\t' + card.name)
+    console.log('And has revealed: ');
+    this.revealedCards.forEach((card) => {
+      console.log(`\t ${card.name}`);
     });
   }
 
   paintHand() {
-    this.hand.forEach(card => {
+    this.hand.forEach((card) => {
       card.paint();
     });
-    this.revealedCards.forEach(card => {
+    this.revealedCards.forEach((card) => {
       card.paint();
     });
   }
 }
 
 class Card {
-  constructor(name = "DefaultCard", color='black', isPicked = false) {
-    this.name = name
-    this.color = color
-    this._x = 0
-    this._y = 0
-    this._isPicked = isPicked
+  constructor(name = 'DefaultCard', color = 'black', isPicked = false) {
+    this.name = name;
+    this.color = color;
+    this._x = 0;
+    this._y = 0;
+    this._isPicked = isPicked;
   }
 
   get isPicked() {
@@ -205,55 +202,56 @@ class Card {
   paint() {
     // paint the card
     ctx.beginPath();
-    
+
     ctx.fillStyle = this.color;
     ctx.fillRect(
       this._x,
       this._y,
       CARD_SIZE.width,
-      CARD_SIZE.height
+      CARD_SIZE.height,
     );
 
-    ctx.fillStyle = "white";
-    ctx.font = "30px Arial";
+    ctx.fillStyle = 'white';
+    ctx.font = '30px Arial';
     ctx.fillText(
       this.name,
       this.x,
       this.y + CARD_SIZE.height / 2,
-      CARD_SIZE.width
-    )
+      CARD_SIZE.width,
+    );
   }
 
   print() {
-    console.log(this.name, this._x, this._y)
+    console.log(this.name, this._x, this._y);
   }
-
 }
 
 function calculateTempuraScore(tempuraCount) {
-  score = 0
-  while(tempuraCount % 2 == 0) {
-    tempuraCount /= 2;
+  let score = 0;
+  let count = tempuraCount;
+  while (count % 2 === 0) {
+    count /= 2;
     score += 5;
   }
-  return score
+  return score;
 }
 
 function calculateSashimiScore(sashimiCount) {
-  score = 0
-  while(sashimiCount % 3 == 0) {
-    sashimiCount /= 3;
+  let score = 0;
+  let count = sashimiCount;
+  while (count % 3 === 0) {
+    count /= 3;
     score += 10;
   }
-  return score
+  return score;
 }
 
 function calculateDumplingScore(dumplingCount) {
-  dumplingScores = [1,3,6,10,15];
-  if (dumplingCount > dumplingScores.length)
+  const dumplingScores = [1, 3, 6, 10, 15];
+  if (dumplingCount > dumplingScores.length) {
     return 15;
-  else
-    return dumplingScores[dumplingCount];
+  }
+  return dumplingScores[dumplingCount];
 }
 
 function calculatePlayerScore(player) {
@@ -265,54 +263,41 @@ function calculatePlayerScore(player) {
   let dumplingCount = 0;
   let hasWasabi = false;
 
-  player.revealedCards.forEach(card => {
-    if(card.name == 'Tempura') {
-      tempuraCount++;
-    }
-    else if (card.name == 'Dumpling') {
-      dumplingCount++;
-    }
-    else if (card.name == 'Sashimi') {
-      sashimiCount++;
-    }
-    else if (card.name == 'Maki') {
-      makiCount++;
-    }
-    else if (card.name == 'Pudding') {
-      puddingCount++;
-    }
-    else if (card.name == 'Wasabi') {
+  player.revealedCards.forEach((card) => {
+    if (card.name === 'Tempura') {
+      tempuraCount += 1;
+    } else if (card.name === 'Dumpling') {
+      dumplingCount += 1;
+    } else if (card.name === 'Sashimi') {
+      sashimiCount += 1;
+    } else if (card.name === 'Maki') {
+      makiCount += 1;
+    } else if (card.name === 'Pudding') {
+      puddingCount += 1;
+    } else if (card.name === 'Wasabi') {
       hasWasabi = true;
-    }
-    else if (card.name == 'Salmon Nigri') {
+    } else if (card.name === 'Salmon Nigri') {
       if (hasWasabi) {
         hasWasabi = false;
-        score += 3*3;
-      }
-      else {
+        score += 3 * 3;
+      } else {
         score += 3;
       }
-    }
-    else if (card.name == 'Squid Nigri') {
+    } else if (card.name === 'Squid Nigri') {
       if (hasWasabi) {
         hasWasabi = false;
-        score += 3*2;
-      }
-      else {
+        score += 3 * 2;
+      } else {
         score += 2;
       }
-    }
-    else if (card.name == 'Egg Nigri') {
+    } else if (card.name === 'Egg Nigri') {
       if (hasWasabi) {
         hasWasabi = false;
-        score += 3*1;
-      }
-      else {
+        score += 3 * 1;
+      } else {
         score += 1;
       }
-    }
-    else if (card.name == 'Chopsticks') {}
-    else {
+    } else {
       console.log('Wrong card', card.name);
     }
   });
@@ -329,7 +314,7 @@ function calculatePlayerScore(player) {
 function calculateAllPlayerScore() {
   players.forEach((player) => {
     calculatePlayerScore(player);
-  })
+  });
 }
 
 function shuffleDeck() {
@@ -337,13 +322,13 @@ function shuffleDeck() {
 
   // --To shuffle an array a of n elements(indices 0..n - 1):
   // for i from n−1 downto 1 do
-  for (let i = deck.length - 1; i > 0; i--) {
+  for (let i = deck.length - 1; i > 0; i -= 1) {
     //   j ← random integer such that 0 ≤ j ≤ i
-    let j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(Math.random() * (i + 1));
     // exchange a[j] and a[i]
-    let tmp = deck[i]
-    deck[i] = deck[j]
-    deck[j] = tmp
+    const tmp = deck[i];
+    deck[i] = deck[j];
+    deck[j] = tmp;
   }
 }
 
@@ -363,79 +348,85 @@ function setupCanvas() {
   resizeCanvas();
 
   // Add event listener for `click` events.
-  canvas.element.addEventListener('click', event => {
-    if (currentGameState == GAME_STATE.PLAYERS_CHOOSE_CARD) {
-
-      let x = event.pageX - canvas.offsetX;
-      let y = event.pageY - canvas.offsetY;
+  canvas.element.addEventListener('click', (event) => {
+    if (currentGameState === GAME_STATE.PLAYERS_CHOOSE_CARD) {
+      const x = event.pageX - canvas.offsetX;
+      const y = event.pageY - canvas.offsetY;
 
       // Collision detection between clicked offset and element.
-      players.forEach(player => {
-        if(player.currentState == PLAYER_STATE.CHOOSING_CARD)
-          for (let i = 0; i < player.hand.length; i++) {
+      players.forEach((player) => {
+        if (player.currentState === PLAYER_STATE.CHOOSING_CARD) {
+          for (let i = 0; i < player.hand.length; i += 1) {
             const card = player.hand[i];
-            if ((x > card.x && x < card.x + CARD_SIZE.width) &&
-              (y > card.y && y < card.y + CARD_SIZE.height)) {
+            if ((x > card.x && x < card.x + CARD_SIZE.width)
+              && (y > card.y && y < card.y + CARD_SIZE.height)) {
               player.pickCard(i);
             }
           }
+        }
       });
     }
   }, false);
 }
 
 function setupDeck() {
-  deck = []
-  for (const card of CARDS) {
-    for (let i = 0; i < card.count; i++) {
-      deck.push(new Card(card.name, card.color))
+  deck = [];
+  CARDS.forEach((card) => {
+    for (let i = 0; i < card.count; i += 1) {
+      deck.push(new Card(card.name, card.color));
     }
-  }
+  });
 }
 
 function setupHandsOnTable() {
-  handsOnTable = []
-  players.forEach(_ => {
+  handsOnTable = [];
+  players.forEach(() => {
     handsOnTable.push([]);
-  })
+  });
 }
 
 function setupPlayers() {
-  players = []
+  players = [];
   PLAYER_NAMES.forEach((name, i) => {
-    players.push(new Player(name, [], PLAYER_POSITIONS[i]))
+    players.push(new Player(name, [], PLAYER_POSITIONS[i]));
   });
 }
 
 function dealOneHand() {
   remainingCards = CARDS_PER_PLAYER[PLAYER_COUNT];
   // Deal cards
-  for (let noCards = remainingCards; noCards > 0; noCards--) {
-    for (let playerNum = 0; playerNum < PLAYER_COUNT; playerNum++) {
-      players[playerNum].addCardToHand(deck.shift())
+  for (let noCards = remainingCards; noCards > 0; noCards -= 1) {
+    for (let playerNum = 0; playerNum < PLAYER_COUNT; playerNum += 1) {
+      players[playerNum].addCardToHand(deck.shift());
     }
   }
 }
 
 function setRemainingCardsTitle() {
-  let title = document.getElementById('cards-remaining');
-  title.innerText = 'Remaining Cards: ' + remainingCards
+  document.getElementById('cards-remaining')
+    .innerText = `Remaining Cards: ${remainingCards}`;
 }
 
 function setRemainingRoundsTitle() {
-  let title = document.getElementById('rounds-remaining');
-  title.innerText = 'Remaining Rounds: ' + remainingRounds
+  document.getElementById('rounds-remaining')
+    .innerText = `Remaining Rounds: ${remainingRounds}`;
 }
 
 function setPlayerScoreTitle() {
-  let title1 = document.getElementById('player1-score');
-  let title2 = document.getElementById('player2-score');
-  title1.innerText = 'Player 1 Score: ' + players[0].currentScore;
-  title2.innerText = 'Player 2 Score: ' + players[1].currentScore;
+  document.getElementById('player1-score')
+    .innerText = `Player 1 Score: ${players[0].currentScore}`;
+  document.getElementById('player2-score')
+    .innerText = `Player 2 Score: ${players[1].currentScore}`;
 }
 
 function setGameState(state) {
   currentGameState = state;
+}
+
+function setAllPlayerState(state) {
+  players.forEach((player) => {
+    player.currentState = state;
+  });
 }
 
 function setup() {
@@ -448,7 +439,7 @@ function setup() {
 
   setRemainingCardsTitle();
 
-  remainingRounds = TOTAL_ROUNDS
+  remainingRounds = TOTAL_ROUNDS;
   setRemainingRoundsTitle();
 
   setPlayerScoreTitle();
@@ -456,16 +447,10 @@ function setup() {
   setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
 }
 
-function setAllPlayerState(state) {
-  players.forEach(player => {
-    player.currentState = state;
-  });
-}
-
 function allPlayersHaveChosen() {
-  return players.every((player) => {
-    return player.currentState == PLAYER_STATE.HAS_CHOSEN_CARD
-  });
+  return players.every(
+    player => player.currentState === PLAYER_STATE.HAS_CHOSEN_CARD,
+  );
 }
 
 function loop() {
@@ -479,44 +464,41 @@ function loop() {
       break;
     case GAME_STATE.PLAYERS_CHOOSE_CARD:
       if (allPlayersHaveChosen()) {
-        remainingCards -= 1
+        remainingCards -= 1;
         setRemainingCardsTitle();
         setAllPlayerState(PLAYER_STATE.REVEAL_HAND);
         setGameState(GAME_STATE.PLAYERS_REVEAL_CARD);
       }
       break;
     case GAME_STATE.PLAYERS_REVEAL_CARD:
-      if (remainingCards == 0) {
+      if (remainingCards === 0) {
         calculateAllPlayerScore();
         setPlayerScoreTitle();
-        if (currentRound == TOTAL_ROUNDS) {
-          setAllPlayerState(PLAYER_STATE.WAITING)
+        if (currentRound === TOTAL_ROUNDS) {
+          setAllPlayerState(PLAYER_STATE.WAITING);
           setGameState(GAME_STATE.CALCULATING_SCORES);
         } else {
           currentRound += 1;
           setAllPlayerState(PLAYER_STATE.WAITING);
           setGameState(GAME_STATE.DEALING_CARDS_TO_PLAYERS);
         }
-      }
-      else {
+      } else {
         setAllPlayerState(PLAYER_STATE.PUT_DOWN_HAND);
         setGameState(GAME_STATE.PLAYERS_PUT_DOWN_HAND);
       }
       break;
     case GAME_STATE.PLAYERS_PUT_DOWN_HAND:
       players.forEach((player, i) => {
-        let playerHand = player.putHandOnTable();
-        let nextPlayerIDX = (i == players.length - 1) ? 0 : i + 1;
-        handsOnTable[nextPlayerIDX] = playerHand;
+        const nextPlayerIDX = (i === players.length - 1) ? 0 : i + 1;
+        handsOnTable[nextPlayerIDX] = player.putHandOnTable();
       });
       setAllPlayerState(PLAYER_STATE.PICKUP_HAND);
       setGameState(GAME_STATE.PLAYERS_PICKUP_HAND);
       break;
     case GAME_STATE.PLAYERS_PICKUP_HAND:
       players.forEach((player, i) => {
-        let hand = handsOnTable[i];
-        player.pickupHand(hand);
-      })
+        player.pickupHand(handsOnTable[i]);
+      });
       setAllPlayerState(PLAYER_STATE.CHOOSING_CARD);
       setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
       break;
@@ -526,14 +508,14 @@ function loop() {
 
   ctx.clearRect(0, 0, canvas.element.width, canvas.element.height);
 
-  players.forEach(player => {
+  players.forEach((player) => {
     player.paintHand();
   });
 
   window.requestAnimFrame(loop);
 }
 
-window.onload = function () {
+window.onload = function setupWindow() {
   setup();
   window.requestAnimFrame(loop);
 };
