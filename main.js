@@ -5,17 +5,91 @@ const PLAYER_NAMES = ['Danne', 'Nany'];
 // const TOTAL_CARDS = 108;
 const TOTAL_ROUNDS = 3;
 
+const IMG_PATH = 'dist/static/img/';
+
+const IMG_NAMES = {
+  tempura: 'sushigo_tempura.jpg',
+  sashimi: 'sushigo_sashimi.jpg',
+  dumpling: 'sushigo_dumpling.jpg',
+  maki: 'sushigo_maki_1.jpg',
+  salmon_nigiri: 'sushigo_nigiri_salmon.jpg',
+  squid_nigiri: 'sushigo_nigiri_squid.jpg',
+  egg_nigiri: 'sushigo_nigiri_egg.jpg',
+  pudding: 'sushigo_pudding.jpg',
+  wasabi: 'sushigo_wasabi.jpg',
+  chopsticks: 'sushigo_chopsticks.jpg',
+};
+
+
+const IMAGES = {
+  tempura: new Image(),
+  sashimi: new Image(),
+  dumpling: new Image(),
+  maki: new Image(),
+  salmon_nigiri: new Image(),
+  squid_nigiri: new Image(),
+  egg_nigiri: new Image(),
+  pudding: new Image(),
+  wasabi: new Image(),
+  chopsticks: new Image(),
+};
+
+const IMAGE_SIZE = {
+  width: 241,
+  height: 367,
+};
+
 const CARDS = [
-  { name: 'Tempura', count: 14, color: 'black' },
-  { name: 'Sashimi', count: 14, color: 'red' },
-  { name: 'Dumpling', count: 14, color: 'blue' },
-  { name: 'Maki', count: 26, color: 'green' },
-  { name: 'Salmon Nigri', count: 10, color: 'purple' },
-  { name: 'Squid Nigri', count: 5, color: 'gray' },
-  { name: 'Egg Nigri', count: 5, color: 'pink' },
-  { name: 'Pudding', count: 10, color: 'orange' },
-  { name: 'Wasabi', count: 6, color: 'lightblue' },
-  { name: 'Chopsticks', count: 4, color: 'pink' },
+  {
+    name: 'Tempura',
+    count: 14,
+    color: 'black',
+  },
+  {
+    name: 'Sashimi',
+    count: 14,
+    color: 'red',
+  },
+  {
+    name: 'Dumpling',
+    count: 14,
+    color: 'blue',
+  },
+  {
+    name: 'Maki',
+    count: 26,
+    color: 'green',
+  },
+  {
+    name: 'Salmon Nigiri',
+    count: 10,
+    color: 'purple',
+  },
+  {
+    name: 'Squid Nigiri',
+    count: 5,
+    color: 'gray',
+  },
+  {
+    name: 'Egg Nigiri',
+    count: 5,
+    color: 'pink',
+  },
+  {
+    name: 'Pudding',
+    count: 10,
+    color: 'orange',
+  },
+  {
+    name: 'Wasabi',
+    count: 6,
+    color: 'lightblue',
+  },
+  {
+    name: 'Chopsticks',
+    count: 4,
+    color: 'pink',
+  },
 ];
 
 const CARD_SIZE = {
@@ -194,25 +268,44 @@ class Card {
   }
 
   paint() {
-    // paint the card
-    ctx.beginPath();
-
-    ctx.fillStyle = this.color;
-    ctx.fillRect(
-      this._x,
-      this._y,
-      CARD_SIZE.width,
-      CARD_SIZE.height,
-    );
-
-    ctx.fillStyle = 'white';
-    ctx.font = '30px Arial';
-    ctx.fillText(
-      this.name,
-      this.x,
-      this.y + CARD_SIZE.height / 2,
-      CARD_SIZE.width,
-    );
+    let img;
+    switch (this.name) {
+      case 'Tempura':
+        img = IMAGES.tempura;
+        break;
+      case 'Sashimi':
+        img = IMAGES.sashimi;
+        break;
+      case 'Dumpling':
+        img = IMAGES.dumpling;
+        break;
+      case 'Maki':
+        img = IMAGES.maki;
+        break;
+      case 'Salmon Nigiri':
+        img = IMAGES.salmon_nigiri;
+        break;
+      case 'Squid Nigiri':
+        img = IMAGES.squid_nigiri;
+        break;
+      case 'Egg Nigiri':
+        img = IMAGES.egg_nigiri;
+        break;
+      case 'Pudding':
+        img = IMAGES.pudding;
+        break;
+      case 'Wasabi':
+        img = IMAGES.wasabi;
+        break;
+      case 'Chopsticks':
+        img = IMAGES.chopsticks;
+        break;
+      default:
+        break;
+    }
+    ctx.drawImage(img, 0, 0,
+      IMAGE_SIZE.width, IMAGE_SIZE.height, this._x,
+      this._y, CARD_SIZE.width, CARD_SIZE.height);
   }
 
   print() {
@@ -237,6 +330,7 @@ class Game {
     this.deck = [];
     CARDS.forEach((card) => {
       for (let i = 0; i < card.count; i += 1) {
+        // this.deck.push(new Card(card.name, card.filename, card.color));
         this.deck.push(new Card(card.name, card.color));
       }
     });
@@ -268,6 +362,10 @@ class Game {
     this.handsOnTable = [];
     this.players.forEach(() => {
       this.handsOnTable.push([]);
+    });
+
+    this.players.forEach((player) => {
+      player.revealedCards = [];
     });
   }
 
@@ -369,27 +467,15 @@ function calculatePlayerScore(player) {
       puddingCount += 1;
     } else if (card.name === 'Wasabi') {
       hasWasabi = true;
-    } else if (card.name === 'Salmon Nigri') {
-      if (hasWasabi) {
-        hasWasabi = false;
-        score += 3 * 3;
-      } else {
-        score += 3;
-      }
-    } else if (card.name === 'Squid Nigri') {
-      if (hasWasabi) {
-        hasWasabi = false;
-        score += 3 * 2;
-      } else {
-        score += 2;
-      }
-    } else if (card.name === 'Egg Nigri') {
-      if (hasWasabi) {
-        hasWasabi = false;
-        score += 3 * 1;
-      } else {
-        score += 1;
-      }
+    } else if (card.name === 'Salmon Nigiri') {
+      score += hasWasabi ? 3 * 3 : 3;
+      hasWasabi = false;
+    } else if (card.name === 'Squid Nigiri') {
+      score += hasWasabi ? 3 * 2 : 2;
+      hasWasabi = false;
+    } else if (card.name === 'Egg Nigiri') {
+      score += hasWasabi ? 3 * 1 : 1;
+      hasWasabi = false;
     } else {
       console.log('Wrong card', card.name);
     }
@@ -408,6 +494,19 @@ function calculateAllPlayerScore() {
   game.players.forEach((player) => {
     calculatePlayerScore(player);
   });
+}
+
+function loadImages() {
+  IMAGES.tempura.src = `${IMG_PATH}${IMG_NAMES.tempura}`;
+  IMAGES.sashimi.src = `${IMG_PATH}${IMG_NAMES.sashimi}`;
+  IMAGES.dumpling.src = `${IMG_PATH}${IMG_NAMES.dumpling}`;
+  IMAGES.maki.src = `${IMG_PATH}${IMG_NAMES.maki}`;
+  IMAGES.salmon_nigiri.src = `${IMG_PATH}${IMG_NAMES.salmon_nigiri}`;
+  IMAGES.squid_nigiri.src = `${IMG_PATH}${IMG_NAMES.squid_nigiri}`;
+  IMAGES.egg_nigiri.src = `${IMG_PATH}${IMG_NAMES.egg_nigiri}`;
+  IMAGES.pudding.src = `${IMG_PATH}${IMG_NAMES.pudding}`;
+  IMAGES.wasabi.src = `${IMG_PATH}${IMG_NAMES.wasabi}`;
+  IMAGES.chopsticks.src = `${IMG_PATH}${IMG_NAMES.chopsticks}`;
 }
 
 function resizeCanvas() {
@@ -465,6 +564,8 @@ function setPlayerScoreTitle() {
 }
 
 function setup() {
+  loadImages();
+
   game = new Game();
 
   setupCanvas();
