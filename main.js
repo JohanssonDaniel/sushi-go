@@ -242,6 +242,43 @@ class Card {
     this._y = 0;
     this._isPicked = isPicked;
     this.mouseIsOver = false;
+
+    
+    this.img = null;
+    switch (this.name) {
+      case 'Tempura':
+        this.img = IMAGES.tempura;
+        break;
+      case 'Sashimi':
+        this.img = IMAGES.sashimi;
+        break;
+      case 'Dumpling':
+        this.img = IMAGES.dumpling;
+        break;
+      case 'Maki':
+        this.img = IMAGES.maki;
+        break; 
+      case 'Salmon Nigiri':
+        this.img = IMAGES.salmon_nigiri;
+        break;
+      case 'Squid Nigiri':
+        this.img = IMAGES.squid_nigiri;
+        break;
+      case 'Egg Nigiri':
+        this.img = IMAGES.egg_nigiri;
+        break;
+      case 'Pudding':
+        this.img = IMAGES.pudding;
+        break;
+      case 'Wasabi':
+        this.img = IMAGES.wasabi;
+        break;
+      case 'Chopsticks':
+        this.img = IMAGES.chopsticks;
+        break;
+      default:
+        break;
+    }
   }
 
   get isPicked() {
@@ -269,48 +306,13 @@ class Card {
   }
 
   paint() {
-    let img;
-    switch (this.name) {
-      case 'Tempura':
-        img = IMAGES.tempura;
-        break;
-      case 'Sashimi':
-        img = IMAGES.sashimi;
-        break;
-      case 'Dumpling':
-        img = IMAGES.dumpling;
-        break;
-      case 'Maki':
-        img = IMAGES.maki;
-        break;
-      case 'Salmon Nigiri':
-        img = IMAGES.salmon_nigiri;
-        break;
-      case 'Squid Nigiri':
-        img = IMAGES.squid_nigiri;
-        break;
-      case 'Egg Nigiri':
-        img = IMAGES.egg_nigiri;
-        break;
-      case 'Pudding':
-        img = IMAGES.pudding;
-        break;
-      case 'Wasabi':
-        img = IMAGES.wasabi;
-        break;
-      case 'Chopsticks':
-        img = IMAGES.chopsticks;
-        break;
-      default:
-        break;
-    }
     
     if (this.mouseIsOver) {
-      ctx.drawImage(img, 0, 0,
+      ctx.drawImage(this.img, 0, 0,
         IMAGE_SIZE.width, IMAGE_SIZE.height, this._x,
         this._y - 10, CARD_SIZE.width, CARD_SIZE.height);
     } else {
-      ctx.drawImage(img, 0, 0,
+      ctx.drawImage(this.img, 0, 0,
         IMAGE_SIZE.width, IMAGE_SIZE.height, this._x,
         this._y, CARD_SIZE.width, CARD_SIZE.height);
     }
