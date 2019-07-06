@@ -241,6 +241,7 @@ class Card {
     this._x = 0;
     this._y = 0;
     this._isPicked = isPicked;
+    this.mouseIsOver = false;
   }
 
   get isPicked() {
@@ -303,9 +304,16 @@ class Card {
       default:
         break;
     }
-    ctx.drawImage(img, 0, 0,
-      IMAGE_SIZE.width, IMAGE_SIZE.height, this._x,
-      this._y, CARD_SIZE.width, CARD_SIZE.height);
+    
+    if (this.mouseIsOver) {
+      ctx.drawImage(img, 0, 0,
+        IMAGE_SIZE.width, IMAGE_SIZE.height, this._x,
+        this._y - 10, CARD_SIZE.width, CARD_SIZE.height);
+    } else {
+      ctx.drawImage(img, 0, 0,
+        IMAGE_SIZE.width, IMAGE_SIZE.height, this._x,
+        this._y, CARD_SIZE.width, CARD_SIZE.height);
+    }
   }
 
   print() {
@@ -523,6 +531,29 @@ function setupCanvas() {
 
   ctx = canvas.element.getContext('2d');
   resizeCanvas();
+
+  // Add event listener for `mousemove` event.
+  canvas.element.addEventListener('mousemove', (event) => {
+    if (game.currentGameState === GAME_STATE.PLAYERS_CHOOSE_CARD) {
+      const x = event.pageX - canvas.offsetX;
+      const y = event.pageY - canvas.offsetY;
+
+      // Collision detection between the canvas and the element that the mouse hovers.
+      game.players.forEach((player) => {
+        if (player.currentState === PLAYER_STATE.CHOOSING_CARD) {
+          for (let i = 0; i < player.hand.length; i += 1) {
+            const card = player.hand[i];
+            if ((x > card.x && x < card.x + CARD_SIZE.width)
+              && (y > card.y && y < card.y + CARD_SIZE.height)) {
+              card.mouseIsOver = true;
+            } else {
+              card.mouseIsOver = false;
+            }
+          }
+        }
+      });
+    }
+  }, false);
 
   // Add event listener for `click` events.
   canvas.element.addEventListener('click', (event) => {
