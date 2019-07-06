@@ -188,12 +188,9 @@ class Player {
   pickCard(cardIndex) {
     const newCard = this.hand.splice(cardIndex, 1)[0];
     newCard.isPicked = true;
+    newCard.x = this.x + this.revealedCards.length * (CARD_SIZE.width + CARD_MARGINS.x);
+    newCard.y = this.y + CARD_SIZE.height;
     this.revealedCards.push(newCard);
-
-    this.revealedCards.forEach((card, i) => {
-      card.x = this.x + i * (CARD_SIZE.width + CARD_MARGINS.x);
-      card.y = this.y + CARD_SIZE.height;
-    });
 
     this.currentState = PLAYER_STATE.HAS_CHOSEN_CARD;
     console.log(`${this.name} has picked ${newCard.name}`);
@@ -306,7 +303,6 @@ class Card {
   }
 
   paint() {
-    
     if (this.mouseIsOver) {
       ctx.drawImage(this.img, 0, 0,
         IMAGE_SIZE.width, IMAGE_SIZE.height, this._x,
