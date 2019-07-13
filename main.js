@@ -8,17 +8,17 @@ const TOTAL_ROUNDS = 3;
 const IMG_PATH = 'dist/static/img/';
 
 const IMG_NAMES = {
-  back: 'sushigo_back.jpg',
-  tempura: 'sushigo_tempura.jpg',
-  sashimi: 'sushigo_sashimi.jpg',
-  dumpling: 'sushigo_dumpling.jpg',
-  maki: 'sushigo_maki_1.jpg',
-  salmon_nigiri: 'sushigo_nigiri_salmon.jpg',
-  squid_nigiri: 'sushigo_nigiri_squid.jpg',
-  egg_nigiri: 'sushigo_nigiri_egg.jpg',
-  pudding: 'sushigo_pudding.jpg',
-  wasabi: 'sushigo_wasabi.jpg',
-  chopsticks: 'sushigo_chopsticks.jpg',
+  back: 'sushigo_back.png',
+  tempura: 'sushigo_tempura.png',
+  sashimi: 'sushigo_sashimi.png',
+  dumpling: 'sushigo_dumpling.png',
+  maki: 'sushigo_maki_1.png',
+  salmon_nigiri: 'sushigo_nigiri_salmon.png',
+  squid_nigiri: 'sushigo_nigiri_squid.png',
+  egg_nigiri: 'sushigo_nigiri_egg.png',
+  pudding: 'sushigo_pudding.png',
+  wasabi: 'sushigo_wasabi.png',
+  chopsticks: 'sushigo_chopsticks.png',
 };
 
 
