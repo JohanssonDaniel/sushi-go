@@ -177,6 +177,7 @@ class Player {
     this.x = position.x;
     this.y = position.y;
     this.updateDirection = updateDirection;
+    this.chosenCards = [];
     this.currentScore = 0;
     this.currentMakiCount = 0;
     this.currentPuddingCount = 0;
@@ -227,7 +228,7 @@ class Player {
       console.log(`\t ${card.name}`);
     });
     console.log('And has revealed: ');
-    this.revealedCards.forEach((card) => {
+    this.chosenCards.forEach((card) => {
       console.log(`\t ${card.name}`);
     });
   }
@@ -236,7 +237,7 @@ class Player {
     this.hand.forEach((card) => {
       card.paint();
     });
-    this.revealedCards.forEach((card) => {
+    this.chosenCards.forEach((card) => {
       card.paint();
     });
   }
@@ -383,7 +384,7 @@ class Game {
     });
 
     this.players.forEach((player) => {
-      player.revealedCards = [];
+      player.chosenCards = [];
     });
   }
 
@@ -472,7 +473,7 @@ function calculatePlayerScore(player) {
   let dumplingCount = 0;
   let hasWasabi = false;
 
-  player.revealedCards.forEach((card) => {
+  player.chosenCards.forEach((card) => {
     if (card.name === 'Tempura') {
       tempuraCount += 1;
     } else if (card.name === 'Dumpling') {
