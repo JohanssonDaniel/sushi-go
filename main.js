@@ -138,6 +138,8 @@ const GAME_STATE = {
   CALCULATING_SCORES: 'calculating_scores',
 };
 
+const CARD_UPDATE_DIRECTION = [1, -1, 0, 0];
+
 const PLAYER_POSITIONS = [
   { x: 0, y: 0 }, // First
   { x: 0, y: CARD_SIZE.height * 3 + CARD_MARGINS.y }, // Second
