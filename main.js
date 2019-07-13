@@ -171,13 +171,12 @@ window.requestAnimFrame = window.requestAnimationFrame
 
 // define Player constructor
 class Player {
-  constructor(name = 'Default', hand = [], position) {
+  constructor(name = 'Default', hand = [], position, updateDirection) {
     this.name = name;
     this.hand = hand;
     this.x = position.x;
     this.y = position.y;
-    this.revealedCards = [];
-    this._currentState = PLAYER_STATE.WAITING;
+    this.updateDirection = updateDirection;
     this.currentScore = 0;
     this.currentMakiCount = 0;
     this.currentPuddingCount = 0;
