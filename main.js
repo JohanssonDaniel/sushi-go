@@ -191,15 +191,6 @@ class Player {
     this.hand.push(card);
   }
 
-  pickupHand(hand) {
-    this.hand = hand;
-    this.hand.forEach((card, i) => {
-      card.x = this.x + i * (CARD_SIZE.width + CARD_MARGINS.x);
-      card.y = this.y + CARD_MARGINS.y;
-      card.currentState = CARD_STATE.IN_HAND;
-    });
-  }
-
   chooseCard(cardIndex) {
     const card = this.hand.splice(cardIndex, 1)[0];
 
@@ -429,9 +420,11 @@ class Game {
     });
   }
 
-  playersPickupHandFromTable() {
+  playersPickupCardsFromTable() {
     this.players.forEach((player, i) => {
-      player.pickupHand(this.handsOnTable[i]);
+      this.handsOnTable[i].forEach((card) => {
+        player.addCardToHand(card);
+      });
     });
   }
 
@@ -680,7 +673,7 @@ function loop() {
           setRemainingRoundsTitle();
         }
       } else {
-        game.playersPickupHandFromTable();
+        game.playersPickupCardsFromTable();
         game.setAllPlayerState(PLAYER_STATE.PUT_DOWN_HAND);
         game.setGameState(GAME_STATE.PLAYERS_PUT_DOWN_HAND);
       }
