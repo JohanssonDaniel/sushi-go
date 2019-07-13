@@ -120,6 +120,14 @@ const PLAYER_STATE = {
   PICKUP_HAND: 'will_take_up_hand',
 };
 
+const CARD_STATE = {
+  IN_DECK: 'is_in_deck',
+  IN_HAND: 'is_in_hand',
+  HOVERED_OVER: 'is_hovered_over',
+  BEING_CHOSEN: 'is_being_chosen',
+  BEING_REVEALED: 'is_being_revealed',
+};
+
 const GAME_STATE = {
   STARTING_GAME: 'starting_game',
   DEALING_CARDS_TO_PLAYERS: 'dealing_cards_to_players',
