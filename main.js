@@ -298,8 +298,17 @@ class Card {
   }
 
   paint() {
+    // Add shadow to image
+    ctx.shadowColor = 'gray';
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+
     switch (this.currentState) {
       case CARD_STATE.IN_DECK:
+        ctx.shadowBlur = 1;
+        ctx.drawImage(IMAGES.back, 0, 0,
+          IMAGE_SIZE.width, IMAGE_SIZE.height, this.x,
+          this.y, CARD_SIZE.width, CARD_SIZE.height);
         break;
       case CARD_STATE.IN_HAND:
         ctx.drawImage(this.img, 0, 0,
