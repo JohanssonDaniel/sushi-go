@@ -147,6 +147,11 @@ const PLAYER_POSITIONS = [
   null,
 ];
 
+const DECK_POSITION = {
+  x: 1200,
+  y: 200,
+};
+
 let ctx;
 
 let game;
@@ -249,8 +254,8 @@ class Card {
   constructor(name = 'DefaultCard', color = 'black') {
     this.name = name;
     this.color = color;
-    this.x = 0;
-    this.y = 0;
+    this.x = DECK_POSITION.x;
+    this.y = DECK_POSITION.y;
     this.x2 = 0;
     this.y2 = 0;
     this.dx = 0;
@@ -441,6 +446,9 @@ class Game {
   paint() {
     this.players.forEach((player) => {
       player.paintHand();
+    });
+    this.deck.forEach((card) => {
+      card.paint();
     });
   }
 }
