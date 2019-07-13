@@ -101,7 +101,7 @@ const CARD_SIZE = {
 
 const CARD_MARGINS = {
   x: 10,
-  y: 0,
+  y: 5,
 };
 
 const CARDS_PER_PLAYER = {
@@ -132,9 +132,9 @@ const GAME_STATE = {
 
 const PLAYER_POSITIONS = [
   { x: 0, y: 0 }, // First
-  { x: 0, y: CARD_SIZE.height * 2 }, // Second
-  { x: 0, y: 20 }, // Third
-  { x: 0, y: 20 }, // Fourth
+  { x: 0, y: CARD_SIZE.height * 3 + CARD_MARGINS.y }, // Second
+  null,
+  null,
 ];
 
 let ctx;
@@ -175,7 +175,7 @@ class Player {
 
   addCardToHand(card) {
     card.x = this.x + this.hand.length * (CARD_SIZE.width + CARD_MARGINS.x);
-    card.y = this.y;
+    card.y = this.y + CARD_MARGINS.y;
     this.hand.push(card);
   }
 
@@ -307,8 +307,9 @@ class Card {
   paint() {
     if (this.mouseIsOver) {
       ctx.drawImage(this.img, 0, 0,
-        IMAGE_SIZE.width, IMAGE_SIZE.height, this._x,
-        this._y - 10, CARD_SIZE.width, CARD_SIZE.height);
+        ctx.drawImage(this.img, 0, 0,
+          IMAGE_SIZE.width, IMAGE_SIZE.height, this.x,
+          this.y - CARD_MARGINS.y, CARD_SIZE.width, CARD_SIZE.height);
     } else {
       ctx.drawImage(this.img, 0, 0,
         IMAGE_SIZE.width, IMAGE_SIZE.height, this._x,
