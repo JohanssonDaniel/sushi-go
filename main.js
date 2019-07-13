@@ -8,6 +8,7 @@ const TOTAL_ROUNDS = 3;
 const IMG_PATH = 'dist/static/img/';
 
 const IMG_NAMES = {
+  back: 'sushigo_back.jpg',
   tempura: 'sushigo_tempura.jpg',
   sashimi: 'sushigo_sashimi.jpg',
   dumpling: 'sushigo_dumpling.jpg',
@@ -22,6 +23,7 @@ const IMG_NAMES = {
 
 
 const IMAGES = {
+  back: new Image(),
   tempura: new Image(),
   sashimi: new Image(),
   dumpling: new Image(),
@@ -503,6 +505,7 @@ function calculateAllPlayerScore() {
 }
 
 function loadImages() {
+  IMAGES.back.src = `${IMG_PATH}${IMG_NAMES.back}`;
   IMAGES.tempura.src = `${IMG_PATH}${IMG_NAMES.tempura}`;
   IMAGES.sashimi.src = `${IMG_PATH}${IMG_NAMES.sashimi}`;
   IMAGES.dumpling.src = `${IMG_PATH}${IMG_NAMES.dumpling}`;
