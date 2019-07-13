@@ -178,6 +178,7 @@ class Player {
     this.y = position.y;
     this.updateDirection = updateDirection;
     this.chosenCards = [];
+    this.currentState = PLAYER_STATE.WAITING;
     this.currentScore = 0;
     this.currentMakiCount = 0;
     this.currentPuddingCount = 0;
@@ -186,6 +187,7 @@ class Player {
   addCardToHand(card) {
     card.x = this.x + this.hand.length * (CARD_SIZE.width + CARD_MARGINS.x);
     card.y = this.y + CARD_MARGINS.y;
+    card.currentState = CARD_STATE.IN_HAND;
     this.hand.push(card);
   }
 
@@ -193,33 +195,42 @@ class Player {
     this.hand = hand;
     this.hand.forEach((card, i) => {
       card.x = this.x + i * (CARD_SIZE.width + CARD_MARGINS.x);
-      card.y = this.y;
+      card.y = this.y + CARD_MARGINS.y;
+      card.currentState = CARD_STATE.IN_HAND;
     });
   }
 
-  pickCard(cardIndex) {
-    const newCard = this.hand.splice(cardIndex, 1)[0];
-    newCard.isPicked = true;
-    newCard.x = this.x + this.revealedCards.length * (CARD_SIZE.width + CARD_MARGINS.x);
-    newCard.y = this.y + CARD_SIZE.height;
-    this.revealedCards.push(newCard);
+  chooseCard(cardIndex) {
+    const card = this.hand.splice(cardIndex, 1)[0];
+
+    card.currentState = CARD_STATE.BEING_CHOSEN;
+
+    // Calculate dx and dy
+    const x1 = card.x;
+    const x2 = this.x + this.chosenCards.length * (CARD_SIZE.width + CARD_MARGINS.x);
+    const y2 = this.y + this.updateDirection * (CARD_SIZE.height + CARD_MARGINS.y);
+
+    card.y2 = y2;
+    card.dy = this.updateDirection * 10;
+
+    card.x2 = x2;
+    if (x1 > x2) {
+      card.dx = -Math.abs(card.dy * ((card.x2 - card.x) / (card.y2 - card.y)));
+    } else if (x1 < x2) {
+      card.dx = Math.abs(card.dy * ((card.x2 - card.x) / (card.y2 - card.y)));
+    } else {
+      card.dx = 0;
+    }
+    this.chosenCards.push(card);
 
     this.currentState = PLAYER_STATE.HAS_CHOSEN_CARD;
-    console.log(`${this.name} has picked ${newCard.name}`);
+    console.log(`${this.name} has picked ${card.name}`);
   }
 
   putHandOnTable() {
     const table = this.hand;
     this.hand = [];
     return table;
-  }
-
-  get currentState() {
-    return this._currentState;
-  }
-
-  set currentState(newState) {
-    this._currentState = newState;
   }
 
   printPlayer() {
@@ -244,16 +255,21 @@ class Player {
 }
 
 class Card {
-  constructor(name = 'DefaultCard', color = 'black', isPicked = false) {
+  constructor(name = 'DefaultCard', color = 'black') {
     this.name = name;
     this.color = color;
-    this._x = 0;
-    this._y = 0;
-    this._isPicked = isPicked;
+    this.x = 0;
+    this.y = 0;
+    this.x2 = 0;
+    this.y2 = 0;
+    this.dx = 0;
+    this.dy = 0;
+    this.currentState = CARD_STATE.IN_DECK;
+    this.beingChosen = false;
     this.mouseIsOver = false;
 
-    
     this.img = null;
+
     switch (this.name) {
       case 'Tempura':
         this.img = IMAGES.tempura;
@@ -266,7 +282,7 @@ class Card {
         break;
       case 'Maki':
         this.img = IMAGES.maki;
-        break; 
+        break;
       case 'Salmon Nigiri':
         this.img = IMAGES.salmon_nigiri;
         break;
@@ -290,40 +306,39 @@ class Card {
     }
   }
 
-  get isPicked() {
-    return this._isPicked;
-  }
-
-  set isPicked(newState) {
-    this._isPicked = newState;
-  }
-
-  get x() {
-    return this._x;
-  }
-
-  set x(newX) {
-    this._x = newX;
-  }
-
-  get y() {
-    return this._y;
-  }
-
-  set y(newY) {
-    this._y = newY;
-  }
-
   paint() {
-    if (this.mouseIsOver) {
-      ctx.drawImage(this.img, 0, 0,
+    switch (this.currentState) {
+      case CARD_STATE.IN_DECK:
+        break;
+      case CARD_STATE.IN_HAND:
+        ctx.drawImage(this.img, 0, 0,
+          IMAGE_SIZE.width, IMAGE_SIZE.height, this.x,
+          this.y, CARD_SIZE.width, CARD_SIZE.height);
+        break;
+      case CARD_STATE.HOVERED_OVER:
         ctx.drawImage(this.img, 0, 0,
           IMAGE_SIZE.width, IMAGE_SIZE.height, this.x,
           this.y - CARD_MARGINS.y, CARD_SIZE.width, CARD_SIZE.height);
-    } else {
-      ctx.drawImage(this.img, 0, 0,
-        IMAGE_SIZE.width, IMAGE_SIZE.height, this._x,
-        this._y, CARD_SIZE.width, CARD_SIZE.height);
+        break;
+      case CARD_STATE.BEING_CHOSEN:
+        if (this.y === this.y2) {
+          this.x = this.x2;
+          this.currentState = CARD_STATE.BEING_REVEALED;
+        } else {
+          this.x += this.dx;
+          this.y += this.dy;
+        }
+        ctx.drawImage(IMAGES.back, 0, 0,
+          IMAGE_SIZE.width, IMAGE_SIZE.height, this.x,
+          this.y, CARD_SIZE.width, CARD_SIZE.height);
+        break;
+      case CARD_STATE.BEING_REVEALED:
+        ctx.drawImage(this.img, 0, 0,
+          IMAGE_SIZE.width, IMAGE_SIZE.height, this.x,
+          this.y, CARD_SIZE.width, CARD_SIZE.height);
+        break;
+      default:
+        break;
     }
   }
 
@@ -373,7 +388,7 @@ class Game {
   setupPlayers() {
     this.players = [];
     PLAYER_NAMES.forEach((name, i) => {
-      this.players.push(new Player(name, [], PLAYER_POSITIONS[i]));
+      this.players.push(new Player(name, [], PLAYER_POSITIONS[i], CARD_UPDATE_DIRECTION[i]));
     });
   }
 
@@ -544,48 +559,47 @@ function setupCanvas() {
   ctx = canvas.element.getContext('2d');
   resizeCanvas();
 
+  function coordInCard(card, x, y) {
+    return (x > card.x && x < card.x + CARD_SIZE.width)
+    && (y > card.y && y < card.y + CARD_SIZE.height);
+  }
+
   // Add event listener for `mousemove` event.
   canvas.element.addEventListener('mousemove', (event) => {
-    if (game.currentGameState === GAME_STATE.PLAYERS_CHOOSE_CARD) {
-      const x = event.pageX - canvas.offsetX;
-      const y = event.pageY - canvas.offsetY;
+    const x = event.pageX - canvas.offsetX;
+    const y = event.pageY - canvas.offsetY;
 
-      // Collision detection between the canvas and the element that the mouse hovers.
-      game.players.forEach((player) => {
-        if (player.currentState === PLAYER_STATE.CHOOSING_CARD) {
-          for (let i = 0; i < player.hand.length; i += 1) {
-            const card = player.hand[i];
-            if ((x > card.x && x < card.x + CARD_SIZE.width)
-              && (y > card.y && y < card.y + CARD_SIZE.height)) {
-              card.mouseIsOver = true;
-            } else {
-              card.mouseIsOver = false;
-            }
+    // Collision detection between the canvas and the element that the mouse hovers.
+    game.players.forEach((player) => {
+      if (player.currentState === PLAYER_STATE.CHOOSING_CARD) {
+        for (let i = 0; i < player.hand.length; i += 1) {
+          const card = player.hand[i];
+          if (coordInCard(card, x, y) && card.currenState !== CARD_STATE.BEING_CHOSEN) {
+            card.currentState = CARD_STATE.HOVERED_OVER;
+          } else {
+            card.currentState = CARD_STATE.IN_HAND;
           }
         }
-      });
-    }
+      }
+    });
   }, false);
 
   // Add event listener for `click` events.
   canvas.element.addEventListener('click', (event) => {
-    if (game.currentGameState === GAME_STATE.PLAYERS_CHOOSE_CARD) {
-      const x = event.pageX - canvas.offsetX;
-      const y = event.pageY - canvas.offsetY;
+    const x = event.pageX - canvas.offsetX;
+    const y = event.pageY - canvas.offsetY;
 
-      // Collision detection between clicked offset and element.
-      game.players.forEach((player) => {
-        if (player.currentState === PLAYER_STATE.CHOOSING_CARD) {
-          for (let i = 0; i < player.hand.length; i += 1) {
-            const card = player.hand[i];
-            if ((x > card.x && x < card.x + CARD_SIZE.width)
-              && (y > card.y && y < card.y + CARD_SIZE.height)) {
-              player.pickCard(i);
-            }
+    // Collision detection between clicked offset and element.
+    game.players.forEach((player) => {
+      if (player.currentState === PLAYER_STATE.CHOOSING_CARD) {
+        for (let i = 0; i < player.hand.length; i += 1) {
+          const card = player.hand[i];
+          if (coordInCard(card, x, y)) {
+            player.chooseCard(i);
           }
         }
-      });
-    }
+      }
+    });
   }, false);
 }
 
