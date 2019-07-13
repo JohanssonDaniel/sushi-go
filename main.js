@@ -418,6 +418,7 @@ class Game {
       const nextPlayerIDX = (i === this.players.length - 1) ? 0 : i + 1;
       this.handsOnTable[nextPlayerIDX] = player.putHandOnTable();
     });
+    this.remainingCards -= 1;
   }
 
   playersPickupCardsFromTable() {
@@ -647,17 +648,19 @@ function loop() {
       game.dealOneHand();
       game.setAllPlayerState(PLAYER_STATE.CHOOSING_CARD);
       game.setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
-
       setRemainingCardsTitle();
       break;
     case GAME_STATE.PLAYERS_CHOOSE_CARD:
       if (allPlayersHaveChosen()) {
-        game.playersPutHandOnTable();
-        game.remainingCards -= 1;
-        setRemainingCardsTitle();
-        game.setAllPlayerState(PLAYER_STATE.REVEAL_HAND);
-        game.setGameState(GAME_STATE.PLAYERS_REVEAL_CARD);
+        game.setAllPlayerState(PLAYER_STATE.PUT_DOWN_HAND);
+        game.setGameState(GAME_STATE.PLAYERS_PUT_DOWN_HAND);
       }
+      break;
+    case GAME_STATE.PLAYERS_PUT_DOWN_HAND:
+      game.playersPutHandOnTable();
+      game.setAllPlayerState(PLAYER_STATE.REVEAL_HAND);
+      game.setGameState(GAME_STATE.PLAYERS_REVEAL_CARD);
+      setRemainingCardsTitle();
       break;
     case GAME_STATE.PLAYERS_REVEAL_CARD:
       if (game.remainingCards === 0) {
@@ -673,20 +676,17 @@ function loop() {
           setRemainingRoundsTitle();
         }
       } else {
-        game.playersPickupCardsFromTable();
-        game.setAllPlayerState(PLAYER_STATE.PUT_DOWN_HAND);
-        game.setGameState(GAME_STATE.PLAYERS_PUT_DOWN_HAND);
+        game.setAllPlayerState(PLAYER_STATE.PICKUP_HAND);
+        game.setGameState(GAME_STATE.PLAYERS_PICKUP_HAND);
       }
       break;
-    case GAME_STATE.PLAYERS_PUT_DOWN_HAND:
-      game.setAllPlayerState(PLAYER_STATE.PICKUP_HAND);
-      game.setGameState(GAME_STATE.PLAYERS_PICKUP_HAND);
-      break;
     case GAME_STATE.PLAYERS_PICKUP_HAND:
+      game.playersPickupCardsFromTable();
       game.setAllPlayerState(PLAYER_STATE.CHOOSING_CARD);
       game.setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
       break;
     default:
+      console.log(`Unknown state: ${game.currentGameState}`);
       break;
   }
 
