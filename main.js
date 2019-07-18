@@ -657,6 +657,8 @@ function allPlayersHaveChosen() {
 }
 
 function loop() {
+  ctx.clearRect(0, 0, canvas.element.width, canvas.element.height);
+
   switch (game.currentGameState) {
     case GAME_STATE.STARTING_GAME:
       return;
