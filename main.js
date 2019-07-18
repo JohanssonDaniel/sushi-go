@@ -326,9 +326,11 @@ class Card {
           this.y - CARD_MARGINS.y, CARD_SIZE.width, CARD_SIZE.height);
         break;
       case CARD_STATE.BEING_CHOSEN:
-        if (this.y === this.y2) {
+        if (this.y === this.y2
+          || (this.dy < 0 && this.y < this.y2)
+          || (this.dy > 0 && this.y > this.y2)) {
           this.x = this.x2;
-          this.currentState = CARD_STATE.BEING_REVEALED;
+          this.currentState = CARD_STATE.WAITING_TO_BE_REVEALED;
         } else {
           this.x += this.dx;
           this.y += this.dy;
@@ -337,8 +339,35 @@ class Card {
           IMAGE_SIZE.width, IMAGE_SIZE.height, this.x,
           this.y, CARD_SIZE.width, CARD_SIZE.height);
         break;
+      case CARD_STATE.WAITING_TO_BE_REVEALED:
+        ctx.drawImage(IMAGES.back, 0, 0,
+          IMAGE_SIZE.width, IMAGE_SIZE.height, this.x,
+          this.y, CARD_SIZE.width, CARD_SIZE.height);
+        break;
       case CARD_STATE.BEING_REVEALED:
         ctx.drawImage(this.img, 0, 0,
+          IMAGE_SIZE.width, IMAGE_SIZE.height, this.x,
+          this.y, CARD_SIZE.width, CARD_SIZE.height);
+        break;
+      case CARD_STATE.MOVING_TO_TABLE:
+        if (this.y === this.y2
+              || (this.dy < 0 && this.y < this.y2)
+              || (this.dy > 0 && this.y > this.y2)) {
+          this.currentState = CARD_STATE.ON_THE_TABLE;
+          this.x = this.x2;
+          this.x2 = 0;
+          this.dx = 0;
+          this.dy = 0;
+        } else {
+          this.x += this.dx;
+          this.y += this.dy;
+        }
+        ctx.drawImage(IMAGES.back, 0, 0,
+          IMAGE_SIZE.width, IMAGE_SIZE.height, this.x,
+          this.y, CARD_SIZE.width, CARD_SIZE.height);
+        break;
+      case CARD_STATE.ON_THE_TABLE:
+        ctx.drawImage(IMAGES.back, 0, 0,
           IMAGE_SIZE.width, IMAGE_SIZE.height, this.x,
           this.y, CARD_SIZE.width, CARD_SIZE.height);
         break;
