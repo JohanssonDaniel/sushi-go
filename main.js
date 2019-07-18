@@ -662,6 +662,35 @@ function allPlayersHaveChosen() {
   });
 }
 
+let startTime = -1;
+const ANIMATION_LENGTH = 300; // Animation length in milliseconds
+
+function displayRevealCardText(timestamp) {
+  if (startTime < 0) {
+    startTime = timestamp;
+    return false;
+  }
+
+  const progress = timestamp - startTime;
+
+  ctx.font = '40px Arial';
+
+  if (progress < ANIMATION_LENGTH) {
+    ctx.fillText('1', canvas.element.width / 2, canvas.element.height / 2);
+    return false;
+  }
+  if (progress < 2 * ANIMATION_LENGTH) {
+    ctx.fillText('1 2', canvas.element.width / 2, canvas.element.height / 2);
+    return false;
+  }
+  if (progress < 3 * ANIMATION_LENGTH) {
+    ctx.fillText('1 2 3!', canvas.element.width / 2, canvas.element.height / 2);
+    return false;
+  }
+  startTime = -1;
+  return true;
+}
+
 function loop() {
   ctx.clearRect(0, 0, canvas.element.width, canvas.element.height);
 
@@ -690,6 +719,12 @@ function loop() {
       }
       break;
     case GAME_STATE.PLAYERS_REVEAL_CARD:
+      if (displayRevealCardText(Date.now())) {
+        game.setAllPlayerState(PLAYER_STATE.WAITING);
+        game.setGameState(GAME_STATE.END_OF_TURN);
+      }
+      break;
+    case GAME_STATE.END_OF_TURN:
       if (game.remainingCards === 0) {
         calculateAllPlayerScore();
         setPlayerScoreTitle();
