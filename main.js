@@ -562,8 +562,8 @@ function loadImages() {
 function resizeCanvas() {
   windowSettings.width = window.innerWidth;
   windowSettings.height = window.innerHeight;
-  canvas.element.width = windowSettings.width;
-  canvas.element.height = windowSettings.height;
+  canvas.element.width = 1400;
+  canvas.element.height = 610;
 }
 
 function setupCanvas() {
