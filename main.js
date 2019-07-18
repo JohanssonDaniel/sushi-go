@@ -668,6 +668,14 @@ function allPlayersHaveChosen() {
   });
 }
 
+function allPlayerCardsOnTable() {
+  return game.handsOnTable.every((hand) => {
+    return hand.every((card) => {
+      return card.currentState === CARD_STATE.ON_THE_TABLE;
+    });
+  });
+}
+
 let startTime = -1;
 const ANIMATION_LENGTH = 300; // Animation length in milliseconds
 
@@ -750,9 +758,11 @@ function loop() {
       }
       break;
     case GAME_STATE.PLAYERS_PICKUP_HAND:
+      if (allPlayerCardsOnTable()) {
       game.playersPickupCardsFromTable();
       game.setAllPlayerState(PLAYER_STATE.CHOOSING_CARD);
       game.setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
+      }
       break;
     default:
       console.log(`Unknown state: ${game.currentGameState}`);
