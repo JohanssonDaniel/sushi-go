@@ -174,19 +174,137 @@ window.requestAnimFrame = window.requestAnimationFrame
     window.setTimeout(callback, 1000 / 60);
   };
 
+class ChosenDeck {
+  constructor() {
+    this.chosenCards = [];
+    this.makiPosition = -1;
+    this.eggPosition = -1;
+    this.squidPosition = -1;
+    this.salmonPosition = -1;
+    this.puddingPosition = -1;
+    this.tempuraPosition = -1;
+    this.sashimiPosition = -1;
+    this.dumplingPosition = -1;
+    this.wasabiPosition = -1;
+    this.wasabiAvailable = false;
+  }
+
+  addCardToDeck(card) {
+    const position = { x: null, y: null };
+    // Adds the card in the correct position in the deck
+    if (card.name === 'Maki') {
+      if (this.makiPosition === -1) {
+        this.chosenCards.push([card]);
+        this.makiPosition = this.chosenCards.length - 1;
+      } else {
+        this.chosenCards[this.makiPosition].push(card);
+      }
+      position.x = this.makiPosition;
+      position.y = this.chosenCards[this.makiPosition].length - 1;
+    } else if (card.name === 'Dumpling') {
+      if (this.dumplingPosition === -1) {
+        this.chosenCards.push([card]);
+        this.dumplingPosition = this.chosenCards.length - 1;
+      } else {
+        this.chosenCards[this.dumplingPosition].push(card);
+      }
+      position.x = this.dumplingPosition;
+      position.y = this.chosenCards[this.dumplingPosition].length - 1;
+    } else if (card.name === 'Pudding') {
+      if (this.puddingPosition === -1) {
+        this.chosenCards.push([card]);
+        this.puddingPosition = this.chosenCards.length - 1;
+      } else {
+        this.chosenCards[this.puddingPosition].push(card);
+      }
+      position.x = this.puddingPosition;
+      position.y = this.chosenCards[this.puddingPosition].length - 1;
+    } else if (card.name === 'Sashimi') {
+      if (this.sashimiPosition === -1) {
+        this.chosenCards.push([card]);
+        this.sashimiPosition = this.chosenCards.length - 1;
+      } else {
+        this.chosenCards[this.sashimiPosition].push(card);
+      }
+      position.x = this.sashimiPosition;
+      position.y = this.chosenCards[this.sashimiPosition].length - 1;
+    } else if (card.name === 'Tempura') {
+      if (this.tempuraPosition === -1) {
+        this.chosenCards.push([card]);
+        this.tempuraPosition = this.chosenCards.length - 1;
+      } else {
+        this.chosenCards[this.tempuraPosition].push(card);
+      }
+      position.x = this.tempuraPosition;
+      position.y = this.chosenCards[this.tempuraPosition].length - 1;
+    } else if (card.name === 'Wasabi') {
+      this.chosenCards.push([card]);
+      this.wasabiPosition = this.chosenCards.length - 1;
+      this.wasabiAvailable = true;
+      position.x = this.wasabiPosition;
+      position.y = this.chosenCards[this.wasabiPosition].length - 1;
+    } else if (this.wasabiAvailable === true
+      && (['Salmon Nigiri', 'Squid Nigiri', 'Egg Nigiri'].indexOf(card.name) !== -1)) {
+      this.chosenCards[this.wasabiPosition].push(card);
+      position.x = this.wasabiPosition;
+      position.y = this.chosenCards[this.wasabiPosition].length - 1;
+      this.wasabiPosition = -1;
+      this.wasabiAvailable = false;
+    } else if (card.name === 'Salmon Nigiri') {
+      if (this.salmonPosition === -1) {
+        this.chosenCards.push([card]);
+        this.salmonPosition = this.chosenCards.length - 1;
+      } else {
+        this.chosenCards[this.salmonPosition].push(card);
+      }
+      position.x = this.salmonPosition;
+      position.y = this.chosenCards[this.salmonPosition].length - 1;
+    } else if (card.name === 'Squid Nigiri') {
+      if (this.squidPosition === -1) {
+        this.chosenCards.push([card]);
+        this.squidPosition = this.chosenCards.length - 1;
+      } else {
+        this.chosenCards[this.squidPosition].push(card);
+      }
+      position.x = this.squidPosition;
+      position.y = this.chosenCards[this.squidPosition].length - 1;
+    } else if (card.name === 'Egg Nigiri') {
+      if (this.eggPosition === -1) {
+        this.chosenCards.push([card]);
+        this.eggPosition = this.chosenCards.length - 1;
+      } else {
+        this.chosenCards[this.eggPosition].push(card);
+      }
+      position.x = this.eggPosition;
+      position.y = this.chosenCards[this.eggPosition].length - 1;
+    }
+    return position;
+  }
+
+  paint() {
+    for (let i = 0; i < this.chosenCards.length; i += 1) {
+      const cards = this.chosenCards[i];
+      for (let j = 0; j < cards.length; j += 1) {
+        cards[j].paint();
+      }
+    }
+  }
+}
+
 // define Player constructor
 class Player {
   constructor(name = 'Default', hand = [], position, updateDirection) {
     this.name = name;
     this.hand = hand;
+    this.chosenCards = new ChosenDeck();
     this.x = position.x;
     this.y = position.y;
     this.updateDirection = updateDirection;
-    this.chosenCards = [];
     this.currentState = PLAYER_STATE.WAITING;
     this.currentScore = 0;
     this.currentMakiCount = 0;
     this.currentPuddingCount = 0;
+    this.currentlyChosenCard = null;
   }
 
   addCardToHand(card) {
@@ -200,14 +318,45 @@ class Player {
     const card = this.hand.splice(cardIndex, 1)[0];
 
     card.currentState = CARD_STATE.BEING_CHOSEN;
+    const newCardPosition = this.chosenCards.addCardToDeck(card);
+    console.log(`${card.name} will have position ${newCardPosition}`);
 
     // Calculate dx and dy
+    let dx;
+    const dy = 10;
     const x1 = card.x;
-    const x2 = this.x + this.chosenCards.length * (CARD_SIZE.width + CARD_MARGINS.x);
+    const y1 = card.y;
+    const x2 = this.x + newCardPosition.x * (CARD_SIZE.width + CARD_MARGINS.x);
     const y2 = this.y + this.updateDirection * (CARD_SIZE.height + CARD_MARGINS.y);
+    if (x1 > x2) {
+      dx = -Math.abs(dy * ((x2 - x1) / (y2 - y1)));
+    } else if (x1 < x2) {
+      dx = Math.abs(dy * ((x2 - x1) / (y2 - y1)));
+    } else {
+      dx = 0;
+    }
+    card.dx = dx;
+    card.dy = this.updateDirection * 10;
+    card.x2 = x2;
+    card.y2 = y2 - this.updateDirection * newCardPosition.y * dy;
+    // this.chosenCards.push(card);
+
+    this.currentState = PLAYER_STATE.HAS_CHOSEN_CARD;
+    this.currentlyChosenCard = card;
+    // console.log(`${this.name} has picked ${card.name}`);
+  }
+
+  putHandOnTable() {
+    this.hand.forEach((card) => {
+      card.currentState = CARD_STATE.MOVING_TO_TABLE;
+
+      // Calculate dx and dy
+      const x1 = card.x;
+      const x2 = DECK_POSITION.x - CARD_SIZE.width;
+      const y2 = DECK_POSITION.y + this.updateDirection * CARD_SIZE.height;
 
     card.y2 = y2;
-    card.dy = this.updateDirection * 10;
+      card.dy = this.updateDirection * 20;
 
     card.x2 = x2;
     if (x1 > x2) {
@@ -217,13 +366,7 @@ class Player {
     } else {
       card.dx = 0;
     }
-    this.chosenCards.push(card);
-
-    this.currentState = PLAYER_STATE.HAS_CHOSEN_CARD;
-    console.log(`${this.name} has picked ${card.name}`);
-  }
-
-  putHandOnTable() {
+    });
     const table = this.hand;
     this.hand = [];
     return table;
@@ -244,9 +387,7 @@ class Player {
     this.hand.forEach((card) => {
       card.paint();
     });
-    this.chosenCards.forEach((card) => {
-      card.paint();
-    });
+    this.chosenCards.paint();
   }
 }
 
