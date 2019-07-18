@@ -443,6 +443,12 @@ class Game {
     });
   }
 
+  allPlayersRevealChosenCards() {
+    this.players.forEach((player) => {
+      player.currentlyChosenCard.currentState = CARD_STATE.BEING_REVEALED;
+    });
+  }
+
   paint() {
     this.players.forEach((player) => {
       player.paintHand();
@@ -738,6 +744,7 @@ function loop() {
           setRemainingRoundsTitle();
         }
       } else {
+        game.allPlayersRevealChosenCards();
         game.setAllPlayerState(PLAYER_STATE.PICKUP_HAND);
         game.setGameState(GAME_STATE.PLAYERS_PICKUP_HAND);
       }
