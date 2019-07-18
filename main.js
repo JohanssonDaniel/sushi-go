@@ -589,7 +589,7 @@ function setupCanvas() {
       if (player.currentState === PLAYER_STATE.CHOOSING_CARD) {
         for (let i = 0; i < player.hand.length; i += 1) {
           const card = player.hand[i];
-          if (coordInCard(card, x, y) && card.currenState !== CARD_STATE.BEING_CHOSEN) {
+          if (coordInCard(card, x, y) && card.currentState !== CARD_STATE.BEING_CHOSEN) {
             card.currentState = CARD_STATE.HOVERED_OVER;
           } else {
             card.currentState = CARD_STATE.IN_HAND;
