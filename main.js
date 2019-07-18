@@ -650,6 +650,12 @@ function setup() {
   setPlayerScoreTitle();
 }
 
+function allChosenCardsWaitingToBeRevealead() {
+  return game.players.every((player) => {
+    return player.currentlyChosenCard.currentState === CARD_STATE.WAITING_TO_BE_REVEALED;
+  });
+}
+
 function allPlayersHaveChosen() {
   return game.players.every((player) => {
     return player.currentState === PLAYER_STATE.HAS_CHOSEN_CARD;
@@ -676,10 +682,12 @@ function loop() {
       }
       break;
     case GAME_STATE.PLAYERS_PUT_DOWN_HAND:
-      game.playersPutHandOnTable();
-      game.setAllPlayerState(PLAYER_STATE.REVEAL_HAND);
+      if (allChosenCardsWaitingToBeRevealead()) {
+        game.remainingCards -= 1;
+        game.setAllPlayerState(PLAYER_STATE.REVEAL_CARD);
       game.setGameState(GAME_STATE.PLAYERS_REVEAL_CARD);
       setRemainingCardsTitle();
+      }
       break;
     case GAME_STATE.PLAYERS_REVEAL_CARD:
       if (game.remainingCards === 0) {
