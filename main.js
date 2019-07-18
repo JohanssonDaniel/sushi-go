@@ -369,7 +369,6 @@ class Game {
     this.deck = [];
     CARDS.forEach((card) => {
       for (let i = 0; i < card.count; i += 1) {
-        // this.deck.push(new Card(card.name, card.filename, card.color));
         this.deck.push(new Card(card.name, card.color));
       }
     });
@@ -772,8 +771,6 @@ function loop() {
       console.log(`Unknown state: ${game.currentGameState}`);
       break;
   }
-
-  ctx.clearRect(0, 0, canvas.element.width, canvas.element.height);
 
   game.paint();
 
