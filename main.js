@@ -454,6 +454,11 @@ class Game {
     this.deck.forEach((card) => {
       card.paint();
     });
+    this.handsOnTable.forEach((hand) => {
+      hand.forEach((card) => {
+        card.paint();
+      });
+    });
   }
 }
 
