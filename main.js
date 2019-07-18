@@ -123,8 +123,11 @@ const PLAYER_STATE = {
 const CARD_STATE = {
   IN_DECK: 'is_in_deck',
   IN_HAND: 'is_in_hand',
+  MOVING_TO_TABLE: 'is_moving_to_table',
+  ON_THE_TABLE: 'is_on_the_table',
   HOVERED_OVER: 'is_hovered_over',
   BEING_CHOSEN: 'is_being_chosen',
+  WAITING_TO_BE_REVEALED: 'is_waiting_to_be_revealed',
   BEING_REVEALED: 'is_being_revealed',
 };
 
@@ -135,6 +138,7 @@ const GAME_STATE = {
   PLAYERS_REVEAL_CARD: 'players_reveal_card',
   PLAYERS_PUT_DOWN_HAND: 'players_put_down_hand',
   PLAYERS_PICKUP_HAND: 'players_pickup_hand',
+  END_OF_TURN: 'is_end_of_turn',
   CALCULATING_SCORES: 'calculating_scores',
 };
 
