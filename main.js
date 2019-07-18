@@ -427,12 +427,10 @@ class Game {
     });
   }
 
-  playersPutHandOnTable() {
-    this.players.forEach((player, i) => {
-      const nextPlayerIDX = (i === this.players.length - 1) ? 0 : i + 1;
-      this.handsOnTable[nextPlayerIDX] = player.putHandOnTable();
-    });
-    this.remainingCards -= 1;
+  playerPutHandOnTable(hand, playerIDX) {
+    // TODO: Use modulo instead
+    const nextPlayerIDX = (playerIDX === this.players.length - 1) ? 0 : playerIDX + 1;
+    this.handsOnTable[nextPlayerIDX] = hand;
   }
 
   playersPickupCardsFromTable() {
@@ -607,14 +605,15 @@ function setupCanvas() {
     const y = event.pageY - canvas.offsetY;
 
     // Collision detection between clicked offset and element.
-    game.players.forEach((player) => {
+    game.players.forEach((player, i) => {
       if (player.currentState === PLAYER_STATE.CHOOSING_CARD) {
-        for (let i = 0; i < player.hand.length; i += 1) {
-          const card = player.hand[i];
+        player.hand.forEach((card, j) => {
           if (coordInCard(card, x, y)) {
-            player.chooseCard(i);
-          }
+            player.chooseCard(j);
+            const hand = player.putHandOnTable();
+            game.playerPutHandOnTable(hand, i);
         }
+        });
       }
     });
   }, false);
