@@ -683,28 +683,32 @@ function calculatePlayerScore(player) {
   let dumplingCount = 0;
   let hasWasabi = false;
 
-  player.chosenCards.forEach((card) => {
+  player.chosenDeck.cards.forEach((cards) => {
+    const card = cards[0];
     if (card.name === 'Tempura') {
-      tempuraCount += 1;
+      score += calculateTempuraScore(cards.length);
     } else if (card.name === 'Dumpling') {
-      dumplingCount += 1;
+      score += calculateDumplingScore(cards.length);
     } else if (card.name === 'Sashimi') {
-      sashimiCount += 1;
+      score += calculateSashimiScore(cards.length);
     } else if (card.name === 'Maki') {
-      makiCount += 1;
+      makiCount = cards.length;
     } else if (card.name === 'Pudding') {
-      puddingCount += 1;
-    } else if (card.name === 'Wasabi') {
-      hasWasabi = true;
+      puddingCount = cards.length;
     } else if (card.name === 'Salmon Nigiri') {
-      score += hasWasabi ? 3 * 3 : 3;
-      hasWasabi = false;
+      score += 3 * (cards.length);
     } else if (card.name === 'Squid Nigiri') {
-      score += hasWasabi ? 3 * 2 : 2;
-      hasWasabi = false;
+      score += 2 * (cards.length);
     } else if (card.name === 'Egg Nigiri') {
-      score += hasWasabi ? 3 * 1 : 1;
-      hasWasabi = false;
+      score += 1 * (cards.length);
+    } else if (card.name === 'Wasabi' && cards.length === 2) {
+      if (cards[1].name === 'Salmon Nigiri') {
+        score += 9;
+      } else if (cards[1].name === 'Squid Nigiri') {
+        score += 6;
+      } else if (cards[1].name === 'Egg Nigiri') {
+        score += 3;
+      }
     } else {
       console.log('Wrong card', card.name);
     }
