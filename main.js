@@ -726,6 +726,7 @@ function calculatePlayerScore(player) {
   score += calculateDumplingScore(dumplingCount);
 
   player.currentScore += score;
+  // TODO Calculate score between player maki count
   player.currentMakiCount += makiCount;
   player.currentPuddingCount += puddingCount;
 }
