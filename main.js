@@ -593,7 +593,7 @@ class Game {
   }
 
   setGameState(state) {
-    this.currentGameState = state;
+    this.currentState = state;
   }
 
   setAllPlayerState(state) {
@@ -886,8 +886,7 @@ function displayRevealCardText(timestamp) {
 
 function loop() {
   ctx.clearRect(0, 0, canvas.element.width, canvas.element.height);
-
-  switch (game.currentGameState) {
+  switch (game.currentState) {
     case GAME_STATE.STARTING_GAME:
       return;
     case GAME_STATE.DEALING_CARDS_TO_PLAYERS:
