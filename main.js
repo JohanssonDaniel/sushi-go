@@ -617,7 +617,7 @@ class Game {
     });
   }
 
-  allPlayersRevealChosenCards() {
+  playersRevealChosenCards() {
     this.players.forEach((player) => {
       player.currentlyChosenCard.currentState = CARD_STATE.BEING_REVEALED;
     });
