@@ -389,7 +389,7 @@ class Player {
     });
   }
 
-  paintHand() {
+  paint() {
     this.hand.forEach((card) => {
       card.paint();
     });
@@ -624,7 +624,7 @@ class Game {
 
   paint() {
     this.players.forEach((player) => {
-      player.paintHand();
+      player.paint();
     });
     this.deck.forEach((card) => {
       card.paint();
