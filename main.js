@@ -928,6 +928,7 @@ function loop() {
       }
       break;
     case GAME_STATE.END_OF_TURN:
+      game.playersRevealChosenCards();
       if (game.remainingCards === 0) {
         calculateAllPlayerScore();
         setPlayerScoreTitle();
