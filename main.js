@@ -623,6 +623,12 @@ class Game {
     });
   }
 
+  playersResetChosenDeck() {
+    this.players.forEach((player) => {
+      player.chosenDeck = new ChosenDeck();
+    });
+  }
+
   paint() {
     this.players.forEach((player) => {
       player.paint();
@@ -925,6 +931,7 @@ function loop() {
       if (game.remainingCards === 0) {
         calculateAllPlayerScore();
         setPlayerScoreTitle();
+        game.playersResetChosenDeck();
         if (game.currentRound === TOTAL_ROUNDS) {
           game.setAllPlayerState(PLAYER_STATE.WAITING);
           game.setGameState(GAME_STATE.CALCULATING_SCORES);
