@@ -529,7 +529,7 @@ class Card {
 }
 
 class Game {
-  constructor(startRound = 0, startState = GAME_STATE.STARTING_GAME,
+  constructor(startRound = 1, startState = GAME_STATE.STARTING_GAME,
     totalRounds = TOTAL_ROUNDS, cardsPerRound = CARDS_PER_PLAYER['2']) {
     this.deck = [];
     this.players = [];
