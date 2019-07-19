@@ -590,6 +590,7 @@ class Game {
         this.players[playerNum].addCardToHand(this.deck.shift());
       }
     }
+    this.remainingCards = this.cardsPerRound;
   }
 
   setGameState(state) {
