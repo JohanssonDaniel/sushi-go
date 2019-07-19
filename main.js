@@ -684,11 +684,7 @@ function calculateDumplingScore(dumplingCount) {
 function calculatePlayerScore(player) {
   let score = 0;
   let makiCount = 0;
-  let tempuraCount = 0;
-  let sashimiCount = 0;
   let puddingCount = 0;
-  let dumplingCount = 0;
-  let hasWasabi = false;
 
   player.chosenDeck.cards.forEach((cards) => {
     const card = cards[0];
@@ -720,10 +716,6 @@ function calculatePlayerScore(player) {
       console.log('Wrong card', card.name);
     }
   });
-
-  score += calculateTempuraScore(tempuraCount);
-  score += calculateSashimiScore(sashimiCount);
-  score += calculateDumplingScore(dumplingCount);
 
   player.currentScore += score;
   // TODO Calculate score between player maki count
@@ -917,9 +909,10 @@ function loop() {
     case GAME_STATE.PLAYERS_PUT_DOWN_HAND:
       if (allChosenCardsWaitingToBeRevealead()) {
         game.remainingCards -= 1;
+        setRemainingCardsTitle();
         game.setAllPlayerState(PLAYER_STATE.REVEAL_CARD);
-      game.setGameState(GAME_STATE.PLAYERS_REVEAL_CARD);
-      setRemainingCardsTitle();
+        game.setGameState(GAME_STATE.PLAYERS_REVEAL_CARD);
+        setRemainingCardsTitle();
       }
       break;
     case GAME_STATE.PLAYERS_REVEAL_CARD:
@@ -939,25 +932,24 @@ function loop() {
           game.setGameState(GAME_STATE.CALCULATING_SCORES);
         } else {
           game.currentRound += 1;
+          setRemainingRoundsTitle();
           game.setAllPlayerState(PLAYER_STATE.WAITING);
           game.setGameState(GAME_STATE.DEALING_CARDS_TO_PLAYERS);
-          setRemainingRoundsTitle();
         }
       } else {
-        game.allPlayersRevealChosenCards();
         game.setAllPlayerState(PLAYER_STATE.PICKUP_HAND);
         game.setGameState(GAME_STATE.PLAYERS_PICKUP_HAND);
       }
       break;
     case GAME_STATE.PLAYERS_PICKUP_HAND:
       if (allPlayerCardsOnTable()) {
-      game.playersPickupCardsFromTable();
-      game.setAllPlayerState(PLAYER_STATE.CHOOSING_CARD);
-      game.setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
+        game.playersPickupCardsFromTable();
+        game.setAllPlayerState(PLAYER_STATE.CHOOSING_CARD);
+        game.setGameState(GAME_STATE.PLAYERS_CHOOSE_CARD);
       }
       break;
     default:
-      console.log(`Unknown state: ${game.currentGameState}`);
+      console.log(`Unknown state: ${game.currentState}`);
       break;
   }
 
