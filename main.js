@@ -361,17 +361,17 @@ class Player {
       const x2 = DECK_POSITION.x - CARD_SIZE.width;
       const y2 = DECK_POSITION.y + this.updateDirection * CARD_SIZE.height;
 
-    card.y2 = y2;
+      card.y2 = y2;
       card.dy = this.updateDirection * 20;
 
-    card.x2 = x2;
-    if (x1 > x2) {
-      card.dx = -Math.abs(card.dy * ((card.x2 - card.x) / (card.y2 - card.y)));
-    } else if (x1 < x2) {
-      card.dx = Math.abs(card.dy * ((card.x2 - card.x) / (card.y2 - card.y)));
-    } else {
-      card.dx = 0;
-    }
+      card.x2 = x2;
+      if (x1 > x2) {
+        card.dx = -Math.abs(card.dy * ((card.x2 - card.x) / (card.y2 - card.y)));
+      } else if (x1 < x2) {
+        card.dx = Math.abs(card.dy * ((card.x2 - card.x) / (card.y2 - card.y)));
+      } else {
+        card.dx = 0;
+      }
     });
     const table = this.hand;
     this.hand = [];
@@ -498,8 +498,8 @@ class Card {
         break;
       case CARD_STATE.MOVING_TO_TABLE:
         if (this.y === this.y2
-              || (this.dy < 0 && this.y < this.y2)
-              || (this.dy > 0 && this.y > this.y2)) {
+          || (this.dy < 0 && this.y < this.y2)
+          || (this.dy > 0 && this.y > this.y2)) {
           this.currentState = CARD_STATE.ON_THE_TABLE;
           this.x = this.x2;
           this.x2 = 0;
@@ -760,7 +760,7 @@ function setupCanvas() {
 
   function coordInCard(card, x, y) {
     return (x > card.x && x < card.x + CARD_SIZE.width)
-    && (y > card.y && y < card.y + CARD_SIZE.height);
+      && (y > card.y && y < card.y + CARD_SIZE.height);
   }
 
   // Add event listener for `mousemove` event.
@@ -796,7 +796,7 @@ function setupCanvas() {
             player.chooseCard(j);
             const hand = player.putHandOnTable();
             game.playerPutHandOnTable(hand, i);
-        }
+          }
         });
       }
     });
