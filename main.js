@@ -304,7 +304,7 @@ class Player {
   constructor(name = 'Default', hand = [], position, updateDirection) {
     this.name = name;
     this.hand = hand;
-    this.chosenCards = new ChosenDeck();
+    this.chosenDeck = new ChosenDeck();
     this.x = position.x;
     this.y = position.y;
     this.updateDirection = updateDirection;
@@ -326,9 +326,7 @@ class Player {
     const card = this.hand.splice(cardIndex, 1)[0];
 
     card.currentState = CARD_STATE.BEING_CHOSEN;
-    const newCardPosition = this.chosenCards.addCardToDeck(card);
-    console.log(`${card.name} will have position ${newCardPosition}`);
-
+    const newCardPosition = this.chosenDeck.addCardToDeck(card);
     // Calculate dx and dy
     let dx;
     const dy = 10;
@@ -386,7 +384,7 @@ class Player {
       console.log(`\t ${card.name}`);
     });
     console.log('And has revealed: ');
-    this.chosenCards.forEach((card) => {
+    this.chosenDeck.forEach((card) => {
       console.log(`\t ${card.name}`);
     });
   }
@@ -395,7 +393,7 @@ class Player {
     this.hand.forEach((card) => {
       card.paint();
     });
-    this.chosenCards.paint();
+    this.chosenDeck.paint();
   }
 }
 
