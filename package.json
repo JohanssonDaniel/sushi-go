@@ -1,35 +1,27 @@
 {
   "name": "sushi-go",
-  "version": "1.0.0",
-  "description": "Browser version of the Awesome card game!",
-  "main": "main.js",
-  "directories": {
-    "test": "test"
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
   },
   "dependencies": {
-    "jsdom": "^15.1.1"
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.8.0",
+    "morgan": "~1.9.1",
+    "socket.io": "^2.2.0",
+    "webpack-merge": "^4.2.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.2.0",
-    "eslint-config-standard": "^13.0.1",
-    "eslint-plugin-import": "^2.18.0",
-    "eslint-plugin-node": "^9.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "mocha": "^6.1.4"
-  },
-  "scripts": {
-    "test": "mocha"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/JohanssonDaniel/sushi-go.git"
-  },
-  "author": "Daniel Johansson",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/JohanssonDaniel/sushi-go/issues"
-  },
-  "homepage": "https://github.com/JohanssonDaniel/sushi-go#readme"
+    "eslint-plugin-import": "^2.18.2",
+    "webpack": "^4.36.1",
+    "webpack-cli": "^3.3.6"
+  }
 }
