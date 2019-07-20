@@ -1,3 +1,5 @@
+import { connect, play } from './networking.js';
+
 /* eslint-disable no-underscore-dangle */
 const PLAYER_COUNT = 2;
 const PLAYER_NAMES = ['Danne', 'Nany'];
@@ -964,3 +966,9 @@ window.onload = function setupWindow() {
 };
 
 window.onresize = resizeCanvas;
+
+Promise.all([
+  connect(),
+]).then(() => {
+  console.log('Connected!');
+});
